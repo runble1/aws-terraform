@@ -1,16 +1,10 @@
-variable "function_name" {}
-variable "log_group_name" {}
-
-variable "metric_name" {}
-variable "metric_name_space" {}
-
 # ====================
 # Logs Metric Filter
 # ====================
 resource "aws_cloudwatch_log_metric_filter" "lambdas_errors" {
   name           = "${var.function_name}-error-filter"
   pattern        = "ERROR" #ターゲット文字列
-  log_group_name = var.log_group_name
+  log_group_name = aws_cloudwatch_log_group.lambda_log_group.name
 
   metric_transformation {
     name      = var.metric_name
@@ -19,6 +13,7 @@ resource "aws_cloudwatch_log_metric_filter" "lambdas_errors" {
     unit      = "Count"
   }
 }
+
 
 # ====================
 # Metric Alarm
@@ -43,11 +38,3 @@ resource "aws_cloudwatch_metric_alarm" "lambdas_errors" {
 
   alarm_actions = [aws_sns_topic.lambdas_errors.arn]
 }
-
-# ====================
-# SNS
-# ====================
-resource "aws_sns_topic" "lambdas_errors" {
-  name = "${var.function_name}-error-topic"
-}
-

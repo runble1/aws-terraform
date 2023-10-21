@@ -1,9 +1,17 @@
 
+module "cloudwatch" {
+  #depends_on        = [module.lambda]
+  source            = "../../modules/cloudwatch"
+  function_name     = "${var.env}-github-app"
+  log_group_name    = "/aws/lambda/${var.env}-github-app"
+  metric_name       = "ErrorCount"
+  metric_name_space = "${var.env}-github-app"
+}
 
 module "lambda" {
   source         = "../../modules/lambda"
   function_name  = "${var.env}-github-app"
-  log_group_name = "/aws/lambda/${var.env}-github-app"
+  log_group_name = module.cloudwatch.cloudwatch_log_name
 
   env = var.env
 
@@ -12,14 +20,7 @@ module "lambda" {
   github_api_token = var.github_api_token
 }
 
-module "aws_cloudwatch" {
-  depends_on        = [module.lambda]
-  source            = "../../modules/cloudwatch"
-  function_name     = "${var.env}-github-app"
-  log_group_name    = "/aws/lambda/${var.env}-github-app"
-  metric_name       = "ErrorCount"
-  metric_name_space = "${var.env}-github-app"
-}
+
 
 /*
 module "chatbot" {

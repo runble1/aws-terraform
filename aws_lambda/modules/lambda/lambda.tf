@@ -38,9 +38,8 @@ resource "aws_lambda_function" "aws_alert_function" {
   handler       = "index.handler"
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs18.x"
-  #runtime = "python3.8"
   timeout     = 10
-  kms_key_arn = aws_kms_key.lambda_key.arn
+  kms_key_arn = aws_kms_key.lambda_key.arn #環境変数の暗号化
 
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
@@ -55,7 +54,7 @@ resource "aws_lambda_function" "aws_alert_function" {
 
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy,
-    aws_cloudwatch_log_group.lambda_log_group
+    #aws_cloudwatch_log_group.lambda_log_group
   ]
 
   tags = {
@@ -63,30 +62,6 @@ resource "aws_lambda_function" "aws_alert_function" {
   }
 }
 
-# ====================
-# CloudWatch Log
-# ====================
-resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name              = var.log_group_name
-  retention_in_days = 30
-}
-
-# ====================
-# KMS
-# ====================
-resource "aws_kms_key" "lambda_key" {
-  description             = "My Lambda Function Customer Master Key"
-  enable_key_rotation     = true
-  deletion_window_in_days = 7
-  tags = {
-    Name = "${var.env}-githubapp"
-  }
-}
-
-resource "aws_kms_alias" "lambda_key_alias" {
-  name          = "alias/${var.function_name}3"
-  target_key_id = aws_kms_key.lambda_key.id
-}
 
 # ====================
 # Functional URLs
