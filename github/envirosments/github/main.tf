@@ -1,5 +1,10 @@
+locals {
+  service = "all_in_one"
+}
+
+
 resource "github_repository" "example" {
-  name        = "all_in_one"
+  name        = local.service
   description = "My awesome codebase"
 
   visibility = "public"
@@ -15,10 +20,9 @@ resource "github_repository_dependabot_security_updates" "example" {
   enabled     = true
 }
 
-/*
+/*できなかった
 resource "github_repository_project" "project" {
-  name       = "terraform-project"
+  name       = "${local.service}-project"
   repository = "${github_repository.example.name}"
   body       = "This is a repository project."
-}
-*/
+}*/
