@@ -1,5 +1,4 @@
 variable "function_name" {}
-variable "log_group_name" {}
 variable "env" {}
 
 variable "slack_channel_id" {}
@@ -38,8 +37,8 @@ resource "aws_lambda_function" "aws_alert_function" {
   handler       = "index.handler"
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs18.x"
-  timeout     = 10
-  kms_key_arn = aws_kms_key.lambda_key.arn #環境変数の暗号化
+  timeout       = 10
+  kms_key_arn   = aws_kms_key.lambda_key.arn #環境変数の暗号化
 
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
