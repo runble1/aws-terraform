@@ -9,7 +9,7 @@ resource "github_repository" "example" {
 
   visibility = "public"
 
-  vulnerability_alerts   = true
+  vulnerability_alerts = true
 
   has_projects = true
 
@@ -21,8 +21,8 @@ resource "github_repository" "example" {
 
 
 resource "github_repository_dependabot_security_updates" "example" {
-  repository  = github_repository.example.id
-  enabled     = true
+  repository = github_repository.example.id
+  enabled    = true
 }
 
 /*できなかった

@@ -6,7 +6,7 @@ gh auth login --scopes project
 gh auth status
 ```
 
-## Usage 
+## Usage
 ```
 GITHUB_TOKEN=$(gh auth token) terraform apply
 ```

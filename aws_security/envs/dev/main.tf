@@ -35,7 +35,7 @@ module "chatbot" {
   source                          = "../../modules/chatbot"
   name                            = local.service
   slack_workspace_id              = var.slack_workspace_id
-  slack_channel_id                = var.slack_channel_id_aws
+  slack_channel_id                = var.slack_channel_id
   sns_topic_securityhub_arn       = module.securityhub.sns_topic_securityhub_arn
   sns_topic_guardduty_arn         = module.guardduty.sns_topic_guardduty_arn
   sns_topic_inspector_arn         = module.inspector.sns_topic_inspector_arn
