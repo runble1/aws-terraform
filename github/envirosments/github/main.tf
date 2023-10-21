@@ -12,7 +12,12 @@ resource "github_repository" "example" {
   vulnerability_alerts   = true
 
   has_projects = true
+
+  # Automatically delete head branches after pull requests are merged
+  delete_branch_on_merge = true
 }
+
+
 
 
 resource "github_repository_dependabot_security_updates" "example" {
