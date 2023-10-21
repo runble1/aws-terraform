@@ -1,14 +1,14 @@
+
+
 module "lambda" {
   source         = "../../modules/lambda"
   function_name  = "${var.env}-github-app"
   log_group_name = "/aws/lambda/${var.env}-github-app"
 
-  env     = var.env
-  region  = var.region
-  account = var.account
+  env = var.env
 
-  slack_channel_id = var.slack_channel_id_gh
-  slack_bot_token  = var.dev_slack_bot_token_aws
+  slack_channel_id = var.slack_channel_id
+  slack_bot_token  = var.slack_bot_token
   github_api_token = var.github_api_token
 }
 
