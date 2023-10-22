@@ -1,7 +1,10 @@
 # Github Apps
-Code Scanning でアラートが Open になると Lambda へ通知され、Lambda から Slack へ通知
+Github Code Scanning でアラートが Open になると Lambda へ通知され、Lambda から Slack へ通知
 
 ## Development
+```
+
+```
 
 ## Deploy
 ### Slack Bot Token
