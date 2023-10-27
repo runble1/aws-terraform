@@ -9,17 +9,18 @@ resource "github_repository" "example" {
 
   visibility = "public"
 
+  # Depandabot
   vulnerability_alerts = true
 
   has_projects = true
 
   # Automatically delete head branches after pull requests are merged
   delete_branch_on_merge = true
+
+  topics               = ["dependabot"]
 }
 
-
-
-
+# dependabot 自動セキュリティ修正
 resource "github_repository_dependabot_security_updates" "example" {
   repository = github_repository.example.id
   enabled    = true

@@ -2,7 +2,7 @@
 ## Development + Deploy
 AWS SAM
 ```
-sam init
+sam init --name sam-app --runtime nodejs18.x --architecture arm64
 cd sam-pp
 sam build
 sam deploy
