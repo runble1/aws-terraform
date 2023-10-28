@@ -2,9 +2,7 @@ variable "function_name" {}
 variable "env" {}
 variable "handler" {}
 
-variable "slack_channel_id" {}
 variable "slack_bot_token" {}
-variable "github_api_token" {}
 
 # ====================
 # Build
@@ -46,9 +44,7 @@ resource "aws_lambda_function" "aws_alert_function" {
 
   environment {
     variables = {
-      SLACK_CHANNEL_ID = var.slack_channel_id
-      SLACK_BOT_TOKEN  = var.slack_bot_token,
-      GITHUB_API_TOKEN = var.github_api_token
+      SLACK_BOT_TOKEN  = var.slack_bot_token
     }
   }
 
