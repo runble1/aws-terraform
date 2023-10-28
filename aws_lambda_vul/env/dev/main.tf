@@ -1,5 +1,5 @@
 locals {
-  service = "github_code_scannnig_alert"
+  service = "vul_ssvc"
 }
 
 module "cloudwatch" {
@@ -10,21 +10,11 @@ module "cloudwatch" {
   metric_name_space = "${var.env}-github-app"
 }
 
-/*
-module "chatbot" {
-  depends_on         = [module.aws_cloudwatch]
-  source             = "../../modules/chatbot"
-  name               = "${var.env}-slackbot-error"
-  aws_sns_topic_arn  = module.aws_cloudwatch.sns_topic_arn
-  slack_workspace_id = var.slack_workspace_id
-  slack_channel_id   = var.slack_channel_id
-}*/
-
 // Chatbot経由せずにLambdaで直接Slackに通知
 module "lambda" {
-  #depends_on        = [module.cloudwatch]
   source        = "../../modules/lambda"
   function_name = "${var.env}-github-app"
+  handler       = "index.evaluateSSVC"
 
   env = var.env
 

@@ -1,5 +1,6 @@
 variable "function_name" {}
 variable "env" {}
+variable "handler" {}
 
 variable "slack_channel_id" {}
 variable "slack_bot_token" {}
@@ -10,7 +11,7 @@ variable "github_api_token" {}
 # ====================
 resource "null_resource" "build_lambda" {
   provisioner "local-exec" {
-    command = "cd ../../app && npm install && npm run build"
+    command = "cd ../../app && npm install && npm run build && cp -r node_modules dist"
   }
 
   triggers = {
@@ -34,7 +35,7 @@ data "archive_file" "function_source" {
 # ====================
 resource "aws_lambda_function" "aws_alert_function" {
   function_name = var.function_name
-  handler       = "index.handler"
+  handler       = var.handler
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs18.x"
   timeout       = 10

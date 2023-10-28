@@ -2,16 +2,14 @@
 Github Code Scanning でアラートが Open になると Lambda へ通知され、Lambda から Slack へ通知
 
 ## Development
+NVD API 
 ```
-
+curl "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2019-1010218" | jq .
 ```
 
 ## Deploy
-### Slack Bot Token
-https://api.slack.com/apps
-
-### Github Token
-https://github.com/settings/tokens?type=beta
+### Slack APP
+https://api.slack.com/apps/A0637B2BQN6/general?
 
 ## Code Scannning
 ### Slackへ
