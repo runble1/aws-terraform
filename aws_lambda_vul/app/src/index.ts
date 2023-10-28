@@ -49,9 +49,18 @@ export async function evaluateSSVC(event: any): Promise<any> {
             body: JSON.stringify({ challenge: body.challenge }),
         };
     }
+
+    // Check for message event
+    if (body.event && body.event.type === 'message') {
+      const messageText = body.event.text;
+      console.log('Message Text:', messageText);
+      // Process the message text as needed
+      // ...
+
+      getCVEById(messageText);
+    }
   }
 
-  getCVEById('CVE-2019-1010218');
 
   // Evaluate Exposure
   let publicValue: number = exposure === Exposure.Public ? 1 : 0;
