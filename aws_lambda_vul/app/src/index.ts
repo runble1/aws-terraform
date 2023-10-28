@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const SLACK_URL = "https://slack.com/api/chat.postMessage"
-//const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
-const SLACK_BOT_TOKEN = 'xoxb-436747830610-6102930540630-1A2w0YUayox6V2q47x6oi9g6'
+const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
 // Define enums for the possible values of each factor
 enum Exposure {
