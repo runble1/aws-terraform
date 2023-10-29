@@ -4,22 +4,22 @@ import { priorityMap, PriorityMapping } from './priorityMap';
 import { SSVCEvaluation } from './SSVCEvaluation';
 
 export function mapCVSSMetricsToSSVCParameters(metrics: CVSSMetrics): SSVCParameters {
-    //
-    const ssvcConfig = new SSVCEvaluation(Exposure.Controlled);
+  // 今回のターゲットの露出度
+  const ssvcEvaluation = new SSVCEvaluation(Exposure.Controlled);
   
-    // Map CVSS metrics to SSVC parameters
-    const exploitation = Exploitation.None;
-    const exposure = ssvcConfig.getExposure();
-    const utility = calculateUtility(determineAutomatable(metrics), determineValueDensity(metrics));
-    const humanImpact = ssvcConfig.getHumanImpact();
+  // SSVC parameters 評価
+  const exploitation = Exploitation.None;
+  const exposure = ssvcEvaluation.getExposure();
+  const utility = evaluateUtility(determineAutomatable(metrics), determineValueDensity(metrics));
+  const humanImpact = evaluateHumanImpact(metrics);
   
-    return {
-      exploitation,
-      exposure,
-      utility,
-      humanImpact
-    };
-  }
+  return {
+    exploitation,
+    exposure,
+    utility,
+    humanImpact
+  };
+}
   
 function determineAutomatable(metrics: CVSSMetrics): Automatable {
   return metrics.attackComplexity === 'LOW' && metrics.userInteraction === 'NONE' ? Automatable.Yes : Automatable.No;
@@ -30,8 +30,40 @@ function determineValueDensity(metrics: CVSSMetrics): ValueDensity {
     ? ValueDensity.Concentrated
     : ValueDensity.Diffuse;
 }
+
+function evaluateHumanImpact(metrics: CVSSMetrics): HumanImpact {
+  const { confidentialityImpact, integrityImpact, availabilityImpact } = metrics;
   
-function calculateUtility(automatable: Automatable, valueDensity: ValueDensity): Utility {
+  // CIAの最も高い影響を基にHumanImpactを判断します。
+  const impacts = [confidentialityImpact, integrityImpact, availabilityImpact];
+  const highestImpact = Math.max(...impacts.map(impact => impactEnumToNumber(impact)));
+
+  switch (highestImpact) {
+    case 3:  // HIGH
+      return HumanImpact.VeryHigh;
+    case 2:  // MEDIUM
+      return HumanImpact.High;
+    case 1:  // LOW
+      return HumanImpact.Medium;
+    default:  // NONE or unknown
+      return HumanImpact.Low;
+  }
+}
+
+function impactEnumToNumber(impact: string): number {
+  switch (impact.toUpperCase()) {
+    case 'HIGH':
+      return 3;
+    case 'MEDIUM':
+      return 2;
+    case 'LOW':
+      return 1;
+    default:  // NONE or unknown
+      return 0;
+  }
+}
+
+function evaluateUtility(automatable: Automatable, valueDensity: ValueDensity): Utility {
   if (automatable === Automatable.No && valueDensity === ValueDensity.Diffuse) {
     return Utility.Laborious;
   } else if (automatable === Automatable.No && valueDensity === ValueDensity.Concentrated) {
