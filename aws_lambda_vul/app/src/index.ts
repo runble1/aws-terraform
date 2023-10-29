@@ -1,43 +1,12 @@
 import axios from 'axios';
+import { Exploitation, Exposure, Utility, Automatable, ValueDensity, HumanImpact } from './types';
 import { priorityMap, PriorityMapping } from './priorityMap';
+
 
 const SLACK_URL = "https://slack.com/api/chat.postMessage"
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
-enum Exploitation {
-  Active = 'active',
-  Poc = 'poc',
-  None = 'none'
-}
 
-enum Exposure {
-  Open = 'open',
-  Controlled = 'controlled',
-  Small = 'small'
-}
-
-enum Utility {
-  SuperEffective = 'superEffective',
-  Efficient = 'efficient',
-  Laborious = 'laborious'
-}
-
-enum Automatable {
-  Yes = 'yes',
-  No = 'no'
-}
-
-enum ValueDensity {
-  Diffuse = 'diffuse',
-  Concentrated = 'concentrated'
-}
-
-enum HumanImpact {
-  VeryHigh = 'veryHigh',
-  High = 'high',
-  Medium = 'medium',
-  Low = 'low'
-}
 
 interface CVSSMetrics {
   attackVector: string;
