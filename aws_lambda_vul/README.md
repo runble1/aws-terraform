@@ -1,6 +1,12 @@
 # Github Apps
 Github Code Scanning でアラートが Open になると Lambda へ通知され、Lambda から Slack へ通知
 
+## Overview
+1. Slack Event Subscriptions で Vulnerability Alert を受け取り、Lambda へ通知
+2. Lambda で CVE 番号から CVSSスコアを取得
+3. CVSS スコアから SSVC で Priority を計算
+4. 結果をスレッドへ返す
+
 ## Development
 ### NVD API 
 ```

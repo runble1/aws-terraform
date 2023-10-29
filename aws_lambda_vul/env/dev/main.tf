@@ -10,7 +10,6 @@ module "cloudwatch" {
   metric_name_space = "${var.env}-${local.service}"
 }
 
-// Chatbot経由せずにLambdaで直接Slackに通知
 module "lambda" {
   source        = "../../modules/lambda"
   function_name = "${var.env}-${local.service}"

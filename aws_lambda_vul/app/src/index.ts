@@ -49,13 +49,16 @@ export async function evaluateSSVC(event: any): Promise<any> {
     const messageText = body.event.text;
     const channel = body.event.channel;
     const thread_ts = body.event.thread_ts || body.event.ts;
-    await postMessageToThread(channel, messageText, thread_ts);
 
     const cveId = extractCVEId(messageText);
     if (cveId) {
       const cvssScore = await getCVEById(cveId);
       const ssvcParameters = mapCVSSScoreToSSVCParameters(cvssScore);
       const priority = calculatePriority(ssvcParameters);
+
+      // Format the result
+      const resultMessage = formatResult(ssvcParameters, priority);
+      await postMessageToThread(channel, resultMessage, thread_ts);
       return respondWithPriority(priority);
     }
   }
@@ -154,4 +157,14 @@ async function postMessageToThread(channel: string, text: string, thread_ts: str
       console.error('An unknown error occurred:', error);
     }
   }
+}
+
+function formatResult(params: SSVCParameters, priority: string): string {
+  return `
+    Exposure: ${params.exposure}
+    Exploit Code Maturity: ${params.exploitCodeMaturity}
+    System Mission Impact: ${params.systemMissionImpact}
+    Safety Impact: ${params.safetyImpact}
+    Priority: ${priority}
+  `;
 }
