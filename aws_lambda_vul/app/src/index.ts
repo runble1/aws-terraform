@@ -3,7 +3,6 @@ import axios from 'axios';
 const SLACK_URL = "https://slack.com/api/chat.postMessage"
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
-// Define enums for the possible values of each factor
 enum Exposure {
   Public = 'public',
   Restricted = 'restricted'
@@ -46,6 +45,25 @@ interface SSVCParameters {
   exploitCodeMaturity: ExploitCodeMaturity;
   systemMissionImpact: SystemMissionImpact;
   safetyImpact: SafetyImpact;
+}
+
+// 対象システム由来
+class SSVCConfig {
+  private systemMissionImpact: SystemMissionImpact;
+  private exposure: Exposure;
+
+  constructor(systemMissionImpact: SystemMissionImpact, exposure: Exposure) {
+    this.systemMissionImpact = systemMissionImpact;
+    this.exposure = exposure;
+  }
+
+  getSystemMissionImpact(): SystemMissionImpact {
+    return this.systemMissionImpact;
+  }
+
+  getExposure(): Exposure {
+    return this.exposure;
+  }
 }
 
 export async function evaluateSSVC(event: any): Promise<any> {
@@ -122,10 +140,13 @@ async function getCVEById(cveId: string): Promise<CVSSMetrics> {
 }
 
 function mapCVSSMetricsToSSVCParameters(metrics: CVSSMetrics): SSVCParameters {
+  //
+  const ssvcConfig = new SSVCConfig(SystemMissionImpact.High, Exposure.Restricted);
+
   // Map CVSS metrics to SSVC parameters
-  const exposure = metrics.attackVector === 'NETWORK' ? Exposure.Public : Exposure.Restricted;
   const exploitCodeMaturity = metrics.attackComplexity === 'LOW' ? ExploitCodeMaturity.High : ExploitCodeMaturity.Low;
-  const systemMissionImpact = metrics.confidentialityImpact === 'HIGH' || metrics.integrityImpact === 'HIGH' ? SystemMissionImpact.High : SystemMissionImpact.Low;
+  const exposure = ssvcConfig.getExposure();
+  const systemMissionImpact = ssvcConfig.getSystemMissionImpact();
   const safetyImpact = metrics.availabilityImpact === 'HIGH' ? SafetyImpact.High : SafetyImpact.Low;
 
   return {
