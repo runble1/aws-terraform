@@ -28,6 +28,19 @@ enum SafetyImpact {
   Low = 'low'
 }
 
+interface CVSSMetrics {
+  attackVector: string;
+  attackComplexity: string;
+  privilegesRequired: string;
+  userInteraction: string;
+  scope: string;
+  confidentialityImpact: string;
+  integrityImpact: string;
+  availabilityImpact: string;
+  baseScore: number;
+  baseSeverity: string;
+}
+
 interface SSVCParameters {
   exposure: Exposure;
   exploitCodeMaturity: ExploitCodeMaturity;
@@ -52,20 +65,21 @@ export async function evaluateSSVC(event: any): Promise<any> {
 
     const cveId = extractCVEId(messageText);
     if (cveId) {
-      const cvssScore = await getCVEById(cveId);
-      const ssvcParameters = mapCVSSScoreToSSVCParameters(cvssScore);
+      // CVSS
+      const cvssMetrics = await getCVEById(cveId);
+      const cvssMessage = formatCVSSMetrics(cvssMetrics);
+      await postMessageToThread(channel, cvssMessage, thread_ts);
+      // SSVC
+      const ssvcParameters = mapCVSSMetricsToSSVCParameters(cvssMetrics);
       const priority = calculatePriority(ssvcParameters);
-
-      // Format the result
       const resultMessage = formatResult(ssvcParameters, priority);
       await postMessageToThread(channel, resultMessage, thread_ts);
-      return respondWithPriority(priority);
     }
   }
 
   return {
-    statusCode: 400,
-    body: JSON.stringify({ error: 'Invalid request' }),
+    statusCode: 200,
+    body: JSON.stringify({ result: 'end' }),
   };
 }
 
@@ -81,56 +95,61 @@ function extractCVEId(messageText: string): string | null {
   return messageText;
 }
 
-async function getCVEById(cveId: string): Promise<number> {
+async function getCVEById(cveId: string): Promise<CVSSMetrics> {
   try {
     const response = await axios.get(`https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=${cveId}`);
-    // Assuming CVSS score can be extracted from the response, adjust this as needed
-    return response.data?.result?.cvss?.baseScore || 0;
+    const cvssMetrics = response.data?.vulnerabilities[0]?.cve?.metrics?.cvssMetricV31[0]?.cvssData;
+    if (cvssMetrics) {
+      return {
+        attackVector: cvssMetrics.attackVector,
+        attackComplexity: cvssMetrics.attackComplexity,
+        privilegesRequired: cvssMetrics.privilegesRequired,
+        userInteraction: cvssMetrics.userInteraction,
+        scope: cvssMetrics.scope,
+        confidentialityImpact: cvssMetrics.confidentialityImpact,
+        integrityImpact: cvssMetrics.integrityImpact,
+        availabilityImpact: cvssMetrics.availabilityImpact,
+        baseScore: cvssMetrics.baseScore,
+        baseSeverity: cvssMetrics.baseSeverity
+      };
+    } else {
+      throw new Error('CVSS metrics not found');
+    }
   } catch (error) {
     console.error(error);
-    return 0;
+    throw error;
   }
 }
 
-function mapCVSSScoreToSSVCParameters(cvssScore: number): SSVCParameters {
-  // Map the CVSS score to SSVC parameters as needed
-  // This is a placeholder implementation
+function mapCVSSMetricsToSSVCParameters(metrics: CVSSMetrics): SSVCParameters {
+  // Map CVSS metrics to SSVC parameters
+  const exposure = metrics.attackVector === 'NETWORK' ? Exposure.Public : Exposure.Restricted;
+  const exploitCodeMaturity = metrics.attackComplexity === 'LOW' ? ExploitCodeMaturity.High : ExploitCodeMaturity.Low;
+  const systemMissionImpact = metrics.confidentialityImpact === 'HIGH' || metrics.integrityImpact === 'HIGH' ? SystemMissionImpact.High : SystemMissionImpact.Low;
+  const safetyImpact = metrics.availabilityImpact === 'HIGH' ? SafetyImpact.High : SafetyImpact.Low;
+
   return {
-    exposure: Exposure.Public,
-    exploitCodeMaturity: ExploitCodeMaturity.High,
-    systemMissionImpact: SystemMissionImpact.High,
-    safetyImpact: SafetyImpact.High,
+    exposure,
+    exploitCodeMaturity,
+    systemMissionImpact,
+    safetyImpact
   };
 }
 
 function calculatePriority(params: SSVCParameters): string {
+  // Assume a simplistic calculation for illustration
   const values = [
-    params.exposure === Exposure.Public ? 1 : 0,
-    mapEnumValueToScore(ExploitCodeMaturity, params.exploitCodeMaturity),
-    mapEnumValueToScore(SystemMissionImpact, params.systemMissionImpact),
-    mapEnumValueToScore(SafetyImpact, params.safetyImpact),
+    params.exposure === Exposure.Public ? 2 : 0,
+    params.exploitCodeMaturity === ExploitCodeMaturity.High ? 2 : 0,
+    params.systemMissionImpact === SystemMissionImpact.High ? 2 : 0,
+    params.safetyImpact === SafetyImpact.High ? 2 : 0
   ];
   const ssvcScore = values.reduce((a, b) => a + b, 0);
-  return getPriority(ssvcScore);
-}
 
-function mapEnumValueToScore(enumObj: any, value: string): number {
-  const keys = Object.keys(enumObj);
-  return keys.indexOf(value);
-}
-
-function getPriority(ssvcScore: number): string {
-  if (ssvcScore >= 8) return 'Critical';
-  if (ssvcScore >= 5) return 'High';
-  if (ssvcScore >= 3) return 'Medium';
+  if (ssvcScore >= 6) return 'Critical';
+  if (ssvcScore >= 4) return 'High';
+  if (ssvcScore >= 2) return 'Medium';
   return 'Low';
-}
-
-function respondWithPriority(priority: string) {
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ priority }),
-  };
 }
 
 async function postMessageToThread(channel: string, text: string, thread_ts: string): Promise<void> {
@@ -157,6 +176,21 @@ async function postMessageToThread(channel: string, text: string, thread_ts: str
       console.error('An unknown error occurred:', error);
     }
   }
+}
+
+function formatCVSSMetrics(metrics: CVSSMetrics): string {
+  return `
+    Attack Vector: ${metrics.attackVector}
+    Attack Complexity: ${metrics.attackComplexity}
+    Privileges Required: ${metrics.privilegesRequired}
+    User Interaction: ${metrics.userInteraction}
+    Scope: ${metrics.scope}
+    Confidentiality Impact: ${metrics.confidentialityImpact}
+    Integrity Impact: ${metrics.integrityImpact}
+    Availability Impact: ${metrics.availabilityImpact}
+    Base Score: ${metrics.baseScore}
+    Base Severity: ${metrics.baseSeverity}
+  `;
 }
 
 function formatResult(params: SSVCParameters, priority: string): string {

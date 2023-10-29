@@ -25,7 +25,7 @@ data "archive_file" "function_source" {
 
   type        = "zip"
   source_dir  = "../../app/dist"
-  output_path = "../../archive/aws_${var.env}/github_app_webhook.zip"
+  output_path = "../../archive/aws_${var.env}/code.zip"
 }
 
 # ====================
@@ -36,7 +36,7 @@ resource "aws_lambda_function" "aws_alert_function" {
   handler       = var.handler
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs18.x"
-  timeout       = 10
+  timeout       = 30
   kms_key_arn   = aws_kms_key.lambda_key.arn #環境変数の暗号化
 
   filename         = data.archive_file.function_source.output_path
@@ -49,13 +49,8 @@ resource "aws_lambda_function" "aws_alert_function" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.lambda_policy,
-    #aws_cloudwatch_log_group.lambda_log_group
+    aws_iam_role_policy_attachment.lambda_policy
   ]
-
-  tags = {
-    Name = "${var.env}-githubapps"
-  }
 }
 
 
