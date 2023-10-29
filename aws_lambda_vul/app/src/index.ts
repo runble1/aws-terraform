@@ -3,25 +3,36 @@ import axios from 'axios';
 const SLACK_URL = "https://slack.com/api/chat.postMessage"
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
-enum Exposure {
-  Public = 'public',
-  Restricted = 'restricted'
-}
-
-enum ExploitCodeMaturity {
-  High = 'high',
-  Medium = 'medium',
-  Low = 'low',
+enum Exploitation {
+  Active = 'active',
+  Poc = 'poc',
   None = 'none'
 }
 
-enum SystemMissionImpact {
-  High = 'high',
-  Medium = 'medium',
-  Low = 'low'
+enum Exposure {
+  Open = 'open',
+  Controlled = 'controlled',
+  Small = 'small'
 }
 
-enum SafetyImpact {
+enum Utility {
+  SuperEffective = 'super effective',
+  Efficient = 'efficient',
+  Laborious = 'laborious'
+}
+
+enum Automatable {
+  Yes = 'yes',
+  No = 'no'
+}
+
+enum ValueDensity {
+  Diffuse = 'diffuse',
+  Concentrated = 'concentrated'
+}
+
+enum WellBeingMissionImpact {
+  VeryHigh = 'very high',
   High = 'high',
   Medium = 'medium',
   Low = 'low'
@@ -41,24 +52,24 @@ interface CVSSMetrics {
 }
 
 interface SSVCParameters {
+  exploitation: Exploitation;
   exposure: Exposure;
-  exploitCodeMaturity: ExploitCodeMaturity;
-  systemMissionImpact: SystemMissionImpact;
-  safetyImpact: SafetyImpact;
+  utility: Utility;
+  wellBeingMissionImpact: WellBeingMissionImpact;
 }
 
-// 対象システム由来
+// 対象システム由来の値
 class SSVCConfig {
-  private systemMissionImpact: SystemMissionImpact;
+  private wellBeingMissionImpact: WellBeingMissionImpact;
   private exposure: Exposure;
 
-  constructor(systemMissionImpact: SystemMissionImpact, exposure: Exposure) {
-    this.systemMissionImpact = systemMissionImpact;
+  constructor(wellBeingMissionImpact: WellBeingMissionImpact, exposure: Exposure) {
+    this.wellBeingMissionImpact = wellBeingMissionImpact;
     this.exposure = exposure;
   }
 
-  getSystemMissionImpact(): SystemMissionImpact {
-    return this.systemMissionImpact;
+  getWellBeingMissionImpact(): WellBeingMissionImpact {
+    return this.wellBeingMissionImpact;
   }
 
   getExposure(): Exposure {
@@ -141,29 +152,52 @@ async function getCVEById(cveId: string): Promise<CVSSMetrics> {
 
 function mapCVSSMetricsToSSVCParameters(metrics: CVSSMetrics): SSVCParameters {
   //
-  const ssvcConfig = new SSVCConfig(SystemMissionImpact.High, Exposure.Restricted);
+  const ssvcConfig = new SSVCConfig(WellBeingMissionImpact.High, Exposure.Small);
 
   // Map CVSS metrics to SSVC parameters
-  const exploitCodeMaturity = metrics.attackComplexity === 'LOW' ? ExploitCodeMaturity.High : ExploitCodeMaturity.Low;
+  const exploitation = Exploitation.None;
   const exposure = ssvcConfig.getExposure();
-  const systemMissionImpact = ssvcConfig.getSystemMissionImpact();
-  const safetyImpact = metrics.availabilityImpact === 'HIGH' ? SafetyImpact.High : SafetyImpact.Low;
+  const utility = calculateUtility(determineAutomatable(metrics), determineValueDensity(metrics));
+  const wellBeingMissionImpact = ssvcConfig.getWellBeingMissionImpact();
 
   return {
+    exploitation,
     exposure,
-    exploitCodeMaturity,
-    systemMissionImpact,
-    safetyImpact
+    utility,
+    wellBeingMissionImpact
   };
 }
 
+function determineAutomatable(metrics: CVSSMetrics): Automatable {
+  return metrics.attackComplexity === 'LOW' && metrics.userInteraction === 'NONE' ? Automatable.Yes : Automatable.No;
+}
+
+function determineValueDensity(metrics: CVSSMetrics): ValueDensity {
+  return (metrics.confidentialityImpact === 'HIGH' || metrics.integrityImpact === 'HIGH' || metrics.availabilityImpact === 'HIGH')
+      ? ValueDensity.Concentrated
+      : ValueDensity.Diffuse;
+}
+
+function calculateUtility(automatable: Automatable, valueDensity: ValueDensity): Utility {
+  if (automatable === Automatable.No && valueDensity === ValueDensity.Diffuse) {
+      return Utility.Laborious;
+  } else if (automatable === Automatable.No && valueDensity === ValueDensity.Concentrated) {
+      return Utility.Efficient;
+  } else if (automatable === Automatable.Yes && valueDensity === ValueDensity.Diffuse) {
+      return Utility.Efficient;
+  } else if (automatable === Automatable.Yes && valueDensity === ValueDensity.Concentrated) {
+      return Utility.SuperEffective;
+  } else {
+      throw new Error('Invalid parameters for Automatable or Value Density');
+  }
+}
+
 function calculatePriority(params: SSVCParameters): string {
-  // Assume a simplistic calculation for illustration
   const values = [
-    params.exposure === Exposure.Public ? 2 : 0,
-    params.exploitCodeMaturity === ExploitCodeMaturity.High ? 2 : 0,
-    params.systemMissionImpact === SystemMissionImpact.High ? 2 : 0,
-    params.safetyImpact === SafetyImpact.High ? 2 : 0
+    params.exploitation === Exploitation.Active ? 2 : 0,
+    params.exposure === Exposure.Open ? 2 : 0,
+    params.utility === Utility.SuperEffective ? 2 : 0,
+    params.wellBeingMissionImpact === WellBeingMissionImpact.VeryHigh ? 2 : 0,
   ];
   const ssvcScore = values.reduce((a, b) => a + b, 0);
 
@@ -216,10 +250,10 @@ function formatCVSSMetrics(metrics: CVSSMetrics): string {
 
 function formatResult(params: SSVCParameters, priority: string): string {
   return `
+    Exploitation: ${params.exploitation}
     Exposure: ${params.exposure}
-    Exploit Code Maturity: ${params.exploitCodeMaturity}
-    System Mission Impact: ${params.systemMissionImpact}
-    Safety Impact: ${params.safetyImpact}
+    Utility: ${params.utility}
+    Well Being Mission Impact: ${params.wellBeingMissionImpact}
     Priority: ${priority}
   `;
 }
