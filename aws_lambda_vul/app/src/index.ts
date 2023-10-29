@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { priorityMap, PriorityMapping } from './priorityMap';
 
 const SLACK_URL = "https://slack.com/api/chat.postMessage"
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
@@ -16,7 +17,7 @@ enum Exposure {
 }
 
 enum Utility {
-  SuperEffective = 'super effective',
+  SuperEffective = 'superEffective',
   Efficient = 'efficient',
   Laborious = 'laborious'
 }
@@ -31,8 +32,8 @@ enum ValueDensity {
   Concentrated = 'concentrated'
 }
 
-enum WellBeingMissionImpact {
-  VeryHigh = 'very high',
+enum HumanImpact {
+  VeryHigh = 'veryHigh',
   High = 'high',
   Medium = 'medium',
   Low = 'low'
@@ -55,21 +56,21 @@ interface SSVCParameters {
   exploitation: Exploitation;
   exposure: Exposure;
   utility: Utility;
-  wellBeingMissionImpact: WellBeingMissionImpact;
+  humanImpact: HumanImpact;
 }
 
 // 対象システム由来の値
 class SSVCConfig {
-  private wellBeingMissionImpact: WellBeingMissionImpact;
+  private humanImpact: HumanImpact;
   private exposure: Exposure;
 
-  constructor(wellBeingMissionImpact: WellBeingMissionImpact, exposure: Exposure) {
-    this.wellBeingMissionImpact = wellBeingMissionImpact;
+  constructor(humanImpact: HumanImpact, exposure: Exposure) {
+    this.humanImpact = humanImpact;
     this.exposure = exposure;
   }
 
-  getWellBeingMissionImpact(): WellBeingMissionImpact {
-    return this.wellBeingMissionImpact;
+  getHumanImpact(): HumanImpact {
+    return this.humanImpact;
   }
 
   getExposure(): Exposure {
@@ -86,24 +87,36 @@ export async function evaluateSSVC(event: any): Promise<any> {
     return respondToChallenge(body.challenge);
   }
 
-  // Check for message event and process the CVE ID
-  if (body?.event?.type === 'message' && body.event.user !== "U0630TCFWJJ") {
-    const messageText = body.event.text;
-    const channel = body.event.channel;
-    const thread_ts = body.event.thread_ts || body.event.ts;
+  // 脆弱性Feedでなければ終了
+  if (body?.event?.type !== 'message' && body.event.user === "U0630TCFWJJ") {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ result: 'end' }),
+    };
+  }
 
-    const cveId = extractCVEId(messageText);
-    if (cveId) {
-      // CVSS
-      const cvssMetrics = await getCVEById(cveId);
-      const cvssMessage = formatCVSSMetrics(cvssMetrics);
-      await postMessageToThread(channel, cvssMessage, thread_ts);
-      // SSVC
-      const ssvcParameters = mapCVSSMetricsToSSVCParameters(cvssMetrics);
-      const priority = calculatePriority(ssvcParameters);
-      const resultMessage = formatResult(ssvcParameters, priority);
-      await postMessageToThread(channel, resultMessage, thread_ts);
-    }
+  const messageText = body.event.text;
+  const channel = body.event.channel;
+  const thread_ts = body.event.thread_ts || body.event.ts;
+
+  const cveId = extractCVEId(messageText);
+
+  if (cveId) {
+    // CVSS
+    const cvssMetrics = await getCVEById(cveId);
+    const cvssMessage = formatCVSSMetrics(cvssMetrics);
+    await postMessageToThread(channel, cvssMessage, thread_ts);
+
+    console.log("koko");
+
+    // SSVC
+    const ssvcParameters = mapCVSSMetricsToSSVCParameters(cvssMetrics);
+    console.log("koko2");
+    const priority = calculatePriority(ssvcParameters);
+    console.log("koko3");
+    const resultMessage = formatResult(ssvcParameters, priority);
+    console.log("koko4");
+    await postMessageToThread(channel, resultMessage, thread_ts);
   }
 
   return {
@@ -152,19 +165,19 @@ async function getCVEById(cveId: string): Promise<CVSSMetrics> {
 
 function mapCVSSMetricsToSSVCParameters(metrics: CVSSMetrics): SSVCParameters {
   //
-  const ssvcConfig = new SSVCConfig(WellBeingMissionImpact.High, Exposure.Small);
+  const ssvcConfig = new SSVCConfig(HumanImpact.High, Exposure.Small);
 
   // Map CVSS metrics to SSVC parameters
   const exploitation = Exploitation.None;
   const exposure = ssvcConfig.getExposure();
   const utility = calculateUtility(determineAutomatable(metrics), determineValueDensity(metrics));
-  const wellBeingMissionImpact = ssvcConfig.getWellBeingMissionImpact();
+  const humanImpact = ssvcConfig.getHumanImpact();
 
   return {
     exploitation,
     exposure,
     utility,
-    wellBeingMissionImpact
+    humanImpact
   };
 }
 
@@ -193,18 +206,21 @@ function calculateUtility(automatable: Automatable, valueDensity: ValueDensity):
 }
 
 function calculatePriority(params: SSVCParameters): string {
-  const values = [
-    params.exploitation === Exploitation.Active ? 2 : 0,
-    params.exposure === Exposure.Open ? 2 : 0,
-    params.utility === Utility.SuperEffective ? 2 : 0,
-    params.wellBeingMissionImpact === WellBeingMissionImpact.VeryHigh ? 2 : 0,
-  ];
-  const ssvcScore = values.reduce((a, b) => a + b, 0);
+  // Convert enums to lowercase for map lookup
+  const exploitation = params.exploitation;
+  const exposure = params.exposure;
+  const utility = params.utility;
+  const humanImpact = params.humanImpact;
 
-  if (ssvcScore >= 6) return 'Critical';
-  if (ssvcScore >= 4) return 'High';
-  if (ssvcScore >= 2) return 'Medium';
-  return 'Low';
+  // Look up priority based on provided parameters
+  const typedPriorityMap = priorityMap as PriorityMapping;
+  const priority = typedPriorityMap[exploitation]?.[exposure]?.[utility]?.[humanImpact];
+  
+  if (priority) {
+    return priority;
+  } else {
+    throw new Error(`Invalid combination of parameters: ${exploitation}, ${exposure}, ${utility}, ${humanImpact}`);
+}
 }
 
 async function postMessageToThread(channel: string, text: string, thread_ts: string): Promise<void> {
@@ -253,7 +269,7 @@ function formatResult(params: SSVCParameters, priority: string): string {
     Exploitation: ${params.exploitation}
     Exposure: ${params.exposure}
     Utility: ${params.utility}
-    Well Being Mission Impact: ${params.wellBeingMissionImpact}
+    Well Being Mission Impact: ${params.humanImpact}
     Priority: ${priority}
   `;
 }
