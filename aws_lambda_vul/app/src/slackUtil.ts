@@ -19,11 +19,11 @@ export async function handleSlackRequests(headers: any, body: any): Promise<any>
 }
 
 async function handleSlackRetry(headers: any): Promise<any> {
-  if (!headers['X-Slack-Retry-Num']) {
-    return true //リトライでない場合は処理継続
+  if (!headers['x-slack-retry-num']) {
+    return true;
   }
   console.log("Fail Slack Retry")
-  return null;
+  return null; //リトライの場合は処理終了
 }
 
 async function handleSlackChallenge(body: any): Promise<any> {
