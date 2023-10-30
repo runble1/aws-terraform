@@ -30,6 +30,13 @@ export async function evaluateSSVC(event: any): Promise<any> {
     await postMessageToThread(channel, resultMessage, thread_ts);
 
     // メンション
+    if (cvssMetrics.baseScore >= 8 || 
+      cvssMetrics.baseSeverity.toLowerCase() === 'critical' || 
+      priority.toLowerCase() === 'out-of-cycle' || 
+      priority.toLowerCase() === 'immediate') {
+    const mentionMessage = "<!channel>";
+    await postMessageToThread(channel, mentionMessage, thread_ts);
+  }
   }
 
   return {
