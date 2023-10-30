@@ -44,7 +44,7 @@ resource "aws_lambda_function" "aws_alert_function" {
 
   environment {
     variables = {
-      SLACK_BOT_TOKEN  = var.slack_bot_token
+      SLACK_BOT_TOKEN = var.slack_bot_token
     }
   }
 

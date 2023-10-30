@@ -17,5 +17,5 @@ module "lambda" {
 
   env = var.env
 
-  slack_bot_token  = var.slack_bot_token
+  slack_bot_token = var.slack_bot_token
 }
