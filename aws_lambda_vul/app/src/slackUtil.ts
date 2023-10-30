@@ -5,11 +5,53 @@ import { SSVCParameters } from './ssvcTypes';
 const SLACK_URL = "https://slack.com/api/chat.postMessage";
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
-export function respondToChallenge(challenge: string) {
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ challenge }),
-  };
+export async function handleSlackRequests(headers: any, body: any): Promise<any> {
+  const slackRetryResponse = await handleSlackRetry(headers);
+  if (slackRetryResponse) return slackRetryResponse;
+
+  const slackChallengeResponse = await handleSlackChallenge(body);
+  if (slackChallengeResponse) return slackChallengeResponse;
+  
+  const slackEventResponse = await handleSlackEvent(body);
+  if (slackEventResponse) return slackEventResponse;
+
+  return null;
+}
+
+async function handleSlackRetry(headers: any): Promise<any> {
+  if (headers['X-Slack-Retry-Num']) {
+    console.info('X-Slack-Retry-Num: ' + headers['X-Slack-Retry-Num']);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ result: 'ok' }),
+    };
+  }
+  console.log("End Slack Retry")
+  return null;
+}
+
+async function handleSlackChallenge(body: any): Promise<any> {
+  // Slack Event Subscriptionの検証
+  if (body?.challenge) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ challenge: body.challenge }),
+    };
+  }
+  console.log("Fail Slack challenge")
+  return null;
+}
+
+async function handleSlackEvent(body: any): Promise<any> {
+  // 脆弱性Feedでなければ終了
+  if (body?.event?.type !== 'message' && body.event.user === "U0630TCFWJJ") {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ result: 'end' }),
+    };
+  }
+  console.log("Fail Vul Feed")
+  return null;
 }
 
 export async function postMessageToThread(channel: string, text: string, thread_ts: string): Promise<void> {

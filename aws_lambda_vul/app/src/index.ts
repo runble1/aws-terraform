@@ -1,30 +1,14 @@
 import { mapCVSSMetricsToSSVCParameters, calculatePriority } from './ssvcUtil'
 import { getCVEById } from './cvssUtil'
-import { respondToChallenge, postMessageToThread, formatCVSSMetrics, formatResult } from './slack'
+import { handleSlackRequests, postMessageToThread, formatCVSSMetrics, formatResult } from './slackUtil'
 
 export async function evaluateSSVC(event: any): Promise<any> {
   const headers = event.headers || {};
-  if (headers['X-Slack-Retry-Num']) {
-    console.info('X-Slack-Retry-Num: ' + headers['X-Slack-Retry-Num']);
-    // Slack EventAPI にレスポンスを返さないとリクエストが再送される
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ result: 'ok' }),
-    };
-  }
-
   const body = event.body ? JSON.parse(event.body) : null;
-  if (body?.challenge) {
-    return respondToChallenge(body.challenge);
-  }
 
-  // 脆弱性Feedでなければ終了
-  if (body?.event?.type !== 'message' && body.event.user === "U0630TCFWJJ") {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ result: 'end' }),
-    };
-  }
+  // slack 系のチェック
+  const slackResponse = await handleSlackRequests(headers, body);
+  if (slackResponse) return slackResponse;
 
   const messageText = body.event.text;
   const channel = body.event.channel;
