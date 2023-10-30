@@ -7,16 +7,25 @@ CVE ID から CVSS スコアを取得し、SSVC で Priority を評価し、Slac
 3. CVSS スコアから SSVC で Priority を評価
 4. 結果をスレッドへ返す
 
-## Development
+## API
+### NVD
+```
+curl "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2019-1010218" | jq .
+```
+
+### EPSS
+```
+curl "https://api.first.org/data/v1/epss?cve=CVE-2019-1010218" | jq .
+```
+
+# Development
 ### envrc
 vi .envrc
 ```
 export SLACK_BOT_TOKEN=xxxx-xxxxxxxxxxxx-xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-### NVD API 
-```
-curl "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2019-1010218" | jq .
+
 ```
 
 ### Slack APP

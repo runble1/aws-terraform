@@ -33,6 +33,22 @@ export enum HumanImpact {
   Low = 'low'
 }
 
+export enum SituatedSafetyImpact {
+  None,
+  Minor,
+  Major,
+  Hazardous,
+  Catastrophic
+}
+
+export enum MissionImpact {
+  None,
+  Degraded,
+  Crippled,
+  MEF_Failure,
+  Mission_Failure
+}
+
 export interface SSVCParameters {
   exploitation: Exploitation;
   exposure: Exposure;

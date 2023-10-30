@@ -3,9 +3,17 @@ import { getCVEById } from './cvssUtil'
 import { respondToChallenge, postMessageToThread, formatCVSSMetrics, formatResult } from './slack'
 
 export async function evaluateSSVC(event: any): Promise<any> {
-  const body = event.body ? JSON.parse(event.body) : null;
+  const headers = event.headers || {};
+  if (headers['X-Slack-Retry-Num']) {
+    console.info('X-Slack-Retry-Num: ' + headers['X-Slack-Retry-Num']);
+    // Slack EventAPI にレスポンスを返さないとリクエストが再送される
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ result: 'ok' }),
+    };
+  }
 
-  // Check for Slack challenge request
+  const body = event.body ? JSON.parse(event.body) : null;
   if (body?.challenge) {
     return respondToChallenge(body.challenge);
   }
@@ -32,7 +40,6 @@ export async function evaluateSSVC(event: any): Promise<any> {
 
     // SSVC
     const ssvcParameters = await mapCVSSMetricsToSSVCParameters(cveId, cvssMetrics);
-    console.log("koko")
     const priority = calculatePriority(ssvcParameters);
     console.log("priority: " + priority + "");
     const resultMessage = formatResult(ssvcParameters, priority);
@@ -48,6 +55,8 @@ export async function evaluateSSVC(event: any): Promise<any> {
 }
 
 function extractCVEId(messageText: string): string | null {
-  // Assuming CVE ID is the whole message text, adjust this as needed
-  return messageText;
+  // Regular expression to match CVE ID format
+  const cveIdPattern = /CVE-\d{4}-\d+/i;
+  const match = messageText.match(cveIdPattern);
+  return match ? match[0] : null;
 }
