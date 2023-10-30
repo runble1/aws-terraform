@@ -10,31 +10,31 @@ CVE ID から CVSS スコアを取得し、SSVC で Priority を評価し、Slac
 ## API
 ### NVD
 ```
-curl "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2019-1010218" | jq .
+curl "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2021-44228" | jq .
 ```
 
 ### EPSS
 ```
-curl "https://api.first.org/data/v1/epss?cve=CVE-2019-1010218" | jq .
+curl "https://api.first.org/data/v1/epss?cve=CVE-2021-44228" | jq .
 ```
 
-# Development
+### CISA KEV
+```
+https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+```
+
+## Development
 ### envrc
 vi .envrc
 ```
 export SLACK_BOT_TOKEN=xxxx-xxxxxxxxxxxx-xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-
-```
-
 ### Slack APP
 https://api.slack.com/apps/A0637B2BQN6/general?
 
 ## Deploy
-
-
-
-### Slackへ
-
-### Issue化
+```
+aws-vault exec test
+terraform apply
+```
