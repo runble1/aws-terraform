@@ -1,14 +1,20 @@
 import { mapCVSSMetricsToSSVCParameters, calculatePriority } from './ssvcUtil'
 import { getCVEById } from './cvssUtil'
-import { handleSlackRequests, postMessageToThread, formatCVSSMetrics, formatResult } from './slackUtil'
+import { handleSlackRequests, postMessageToThread, formatCVSSMetrics, formatSSVC } from './slackUtil'
 
 export async function evaluateSSVC(event: any): Promise<any> {
   const headers = event.headers || {};
   const body = event.body ? JSON.parse(event.body) : null;
 
-  // slack 系のチェック
+  console.log("headers: " + JSON.stringify(headers));
+  console.log("body: " + JSON.stringify(body));
+
+  // リクエストのチェック
   const slackResponse = await handleSlackRequests(headers, body);
-  if (slackResponse) return slackResponse;
+  if (!slackResponse) return {
+    'statusCode': 200,
+    'body': JSON.stringify({ result: 'End' }),
+  };
 
   const messageText = body.event.text;
   const channel = body.event.channel;
@@ -26,7 +32,7 @@ export async function evaluateSSVC(event: any): Promise<any> {
     const ssvcParameters = await mapCVSSMetricsToSSVCParameters(cveId, cvssMetrics);
     const priority = calculatePriority(ssvcParameters);
     console.log("priority: " + priority + "");
-    const resultMessage = formatResult(ssvcParameters, priority);
+    const resultMessage = formatSSVC(ssvcParameters, priority);
     await postMessageToThread(channel, resultMessage, thread_ts);
 
     // メンション

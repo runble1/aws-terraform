@@ -7,50 +7,41 @@ const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
 export async function handleSlackRequests(headers: any, body: any): Promise<any> {
   const slackRetryResponse = await handleSlackRetry(headers);
-  if (slackRetryResponse) return slackRetryResponse;
+  if (!slackRetryResponse) return null;
 
   const slackChallengeResponse = await handleSlackChallenge(body);
-  if (slackChallengeResponse) return slackChallengeResponse;
+  if (!slackChallengeResponse) return null;
   
   const slackEventResponse = await handleSlackEvent(body);
-  if (slackEventResponse) return slackEventResponse;
+  if (!slackEventResponse) return null;
 
-  return null;
+  return true;
 }
 
 async function handleSlackRetry(headers: any): Promise<any> {
-  if (headers['X-Slack-Retry-Num']) {
-    console.info('X-Slack-Retry-Num: ' + headers['X-Slack-Retry-Num']);
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ result: 'ok' }),
-    };
+  if (!headers['X-Slack-Retry-Num']) {
+    return true //リトライでない場合は処理継続
   }
-  console.log("End Slack Retry")
+  console.log("Fail Slack Retry")
   return null;
 }
 
 async function handleSlackChallenge(body: any): Promise<any> {
-  // Slack Event Subscriptionの検証
   if (body?.challenge) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ challenge: body.challenge }),
-    };
+    return true // challenge が成功した場合は処理継続
+  } else if (!body?.challenge) {
+    return true;  // challenge プロパティが存在しない場合は処理継続
   }
   console.log("Fail Slack challenge")
   return null;
 }
 
 async function handleSlackEvent(body: any): Promise<any> {
-  // 脆弱性Feedでなければ終了
-  if (body?.event?.type !== 'message' && body.event.user === "U0630TCFWJJ") {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ result: 'end' }),
-    };
+  // Slack Event が正常な場合は処理継続
+  if (body?.event?.type === 'message' && body.event.user === "UCUSXHPHT") {
+    return true; 
   }
-  console.log("Fail Vul Feed")
+  console.log("Fail Vul Feed");
   return null;
 }
 
@@ -95,7 +86,7 @@ export function formatCVSSMetrics(metrics: CVSSMetrics): string {
   `;
 }
 
-export function formatResult(params: SSVCParameters, priority: string): string {
+export function formatSSVC(params: SSVCParameters, priority: string): string {
   return `
     Exploitation: ${params.exploitation}
     Exposure: ${params.exposure}
