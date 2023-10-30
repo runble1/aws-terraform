@@ -33,7 +33,7 @@ export enum HumanImpact {
   Low = 'low'
 }
 
-export  interface SSVCParameters {
+export interface SSVCParameters {
   exploitation: Exploitation;
   exposure: Exposure;
   utility: Utility;

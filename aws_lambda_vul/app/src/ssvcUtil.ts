@@ -1,14 +1,15 @@
 import { CVSSMetrics } from './cvssTypes';
-import { Exploitation, Exposure, Utility, Automatable, ValueDensity, HumanImpact, SSVCParameters } from './ssvcTypes';
+import { Exposure, Utility, Automatable, ValueDensity, HumanImpact, SSVCParameters } from './ssvcTypes';
 import { priorityMap, PriorityMapping } from './priorityMap';
 import { SSVCEvaluation } from './SSVCEvaluation';
+import { evaluateExploitation } from './ssvcUtilExploitation';
 
-export function mapCVSSMetricsToSSVCParameters(metrics: CVSSMetrics): SSVCParameters {
+export async function mapCVSSMetricsToSSVCParameters(cveId: string, metrics: CVSSMetrics): Promise<SSVCParameters> {
   // 今回のターゲットの露出度
   const ssvcEvaluation = new SSVCEvaluation(Exposure.Controlled);
   
   // SSVC parameters 評価
-  const exploitation = Exploitation.None;
+  const exploitation = await evaluateExploitation(cveId);
   const exposure = ssvcEvaluation.getExposure();
   const utility = evaluateUtility(determineAutomatable(metrics), determineValueDensity(metrics));
   const humanImpact = evaluateHumanImpact(metrics);
@@ -20,7 +21,7 @@ export function mapCVSSMetricsToSSVCParameters(metrics: CVSSMetrics): SSVCParame
     humanImpact
   };
 }
-  
+
 function determineAutomatable(metrics: CVSSMetrics): Automatable {
   return metrics.attackComplexity === 'LOW' && metrics.userInteraction === 'NONE' ? Automatable.Yes : Automatable.No;
 }
@@ -64,17 +65,18 @@ function impactEnumToNumber(impact: string): number {
 }
 
 function evaluateUtility(automatable: Automatable, valueDensity: ValueDensity): Utility {
-  if (automatable === Automatable.No && valueDensity === ValueDensity.Diffuse) {
-    return Utility.Laborious;
-  } else if (automatable === Automatable.No && valueDensity === ValueDensity.Concentrated) {
-    return Utility.Efficient;
-  } else if (automatable === Automatable.Yes && valueDensity === ValueDensity.Diffuse) {
-    return Utility.Efficient;
-  } else if (automatable === Automatable.Yes && valueDensity === ValueDensity.Concentrated) {
-    return Utility.SuperEffective;
-  } else {
-    throw new Error('Invalid parameters for Automatable or Value Density');
-  }
+  switch (true) {  // `true`を使って各ケースを評価
+    case automatable === Automatable.No && valueDensity === ValueDensity.Diffuse:
+      return Utility.Laborious;
+    case automatable === Automatable.No && valueDensity === ValueDensity.Concentrated:
+      return Utility.Efficient;
+    case automatable === Automatable.Yes && valueDensity === ValueDensity.Diffuse:
+      return Utility.Efficient;
+    case automatable === Automatable.Yes && valueDensity === ValueDensity.Concentrated:
+      return Utility.SuperEffective;
+    default:
+      throw new Error('Invalid parameters for Automatable or Value Density');
+    }
 }
   
 export function calculatePriority(params: SSVCParameters): string {

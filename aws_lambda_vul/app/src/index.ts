@@ -31,10 +31,14 @@ export async function evaluateSSVC(event: any): Promise<any> {
     await postMessageToThread(channel, cvssMessage, thread_ts);
 
     // SSVC
-    const ssvcParameters = mapCVSSMetricsToSSVCParameters(cvssMetrics);
+    const ssvcParameters = await mapCVSSMetricsToSSVCParameters(cveId, cvssMetrics);
+    console.log("koko")
     const priority = calculatePriority(ssvcParameters);
+    console.log("priority: " + priority + "");
     const resultMessage = formatResult(ssvcParameters, priority);
     await postMessageToThread(channel, resultMessage, thread_ts);
+
+    // メンション
   }
 
   return {
