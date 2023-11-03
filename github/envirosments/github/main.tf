@@ -17,7 +17,7 @@ resource "github_repository" "example" {
   # Automatically delete head branches after pull requests are merged
   delete_branch_on_merge = true
 
-  topics               = ["dependabot"]
+  topics = ["dependabot"]
 }
 
 # dependabot 自動セキュリティ修正

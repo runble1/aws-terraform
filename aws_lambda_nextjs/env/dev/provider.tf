@@ -8,6 +8,13 @@ provider "aws" {
   }
 }
 
+// Lambda@edge用のプロバイダー
+provider "aws" {
+  alias  = "useast1"
+  region = "us-east-1"
+}
+
+
 terraform {
   required_version = ">= 1.3.8"
   required_providers {
@@ -16,7 +23,7 @@ terraform {
   backend "s3" {
     region  = "ap-northeast-1"
     bucket  = "runble1-tfstate"
-    key     = "all_in_one/aws_lambda/terraform.tfstate"
+    key     = "all_in_one/aws_lambda_nextjs/terraform.tfstate"
     encrypt = true
   }
 }
