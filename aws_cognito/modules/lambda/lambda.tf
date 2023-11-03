@@ -37,12 +37,10 @@ resource "aws_lambda_function" "this" {
   source_code_hash = data.archive_file.function_source.output_base64sha256
 
   publish = true
-  #s3_bucket     = aws_s3_bucket.nextjs_bucket.bucket
-  #s3_key        = "your-nextjs-lambda.zip"
 
   environment {
     variables = {
-      //SLACK_BOT_TOKEN = var.slack_bot_token
+      DYNAMODB_TABLE_NAME = var.dynamodb_table_name
     }
   }
 
@@ -54,6 +52,27 @@ resource "aws_lambda_function" "this" {
 data "aws_lambda_function" "this_version" {
   function_name = aws_lambda_function.this.function_name
   qualifier     = aws_lambda_function.this.version # 特定のバージョンを指定
+}
+
+# ====================
+# Test
+# ====================
+resource "null_resource" "test_lambda" {
+  depends_on = [aws_lambda_function.this]
+
+  provisioner "local-exec" {
+    command = <<EOF
+      aws lambda invoke \
+        --function-name ${aws_lambda_function.this.function_name} \
+        --cli-binary-format raw-in-base64-out \
+        --payload '{"artist": "Michael Jackson", "title": "Thriller"}' \
+        output.txt
+EOF
+  }
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
 }
 
 # ====================

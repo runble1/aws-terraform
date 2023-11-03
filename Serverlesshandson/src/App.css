@@ -1,0 +1,89 @@
+.App {
+  width: 800px;
+  margin: auto;
+}
+
+.App-header {
+  text-align: center;
+  padding: 20px 40px;
+  margin-bottom: 20px;
+}
+
+.App-section {
+  text-align: left;
+  border: 1px solid #CCCCCC;
+  border-radius: 6px;
+  box-shadow: 4px 4px 8px 0 rgba(0,0,0,0.1);
+  padding: 20px 40px;
+  margin-bottom: 20px;
+}
+
+.App-footer {
+  text-align: right;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.aws-logo {
+  height: 1.9em;
+  vertical-align: middle;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.textbox {
+  font-size: 16px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  margin-bottom: 20px;
+}
+
+.button {
+  font-size: 16px;
+  background: linear-gradient(#FFFFFF, #CCCCCC);
+  border: 1px solid #999999;
+  border-radius: 4px;
+  min-width: 100px;
+  padding: 8px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.button:hover {
+  border: 1px solid #000000;
+}
+
+.table {
+  border: none;
+  border-collapse: separate;
+  border-spacing: 1px;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.table-header {
+  font-size: 16px;
+  text-align: center;
+  color:#FFFFFF;
+  background: #3366FF;
+  border: none;
+  min-width: 200px;
+  padding: 8px;
+}
+
+.table-data {
+  font-size: 16px;
+  text-align: left;
+  color:#000000;
+  background: #99CCFF;
+  border: none;
+  min-width: 200px;
+  padding: 8px;
+}

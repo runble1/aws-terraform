@@ -1,7 +1,24 @@
 locals {
-  service = "lambda_nextjs"
+  service = "cognito"
 }
 
+module "cognito" {
+  source = "../../modules/cognito"
+}
+
+module "dynamodb" {
+  source       = "../../modules/dynamodb"
+  service_name = "${var.env}-${local.service}"
+}
+
+module "lambda" {
+  source              = "../../modules/lambda"
+  function_name       = "${var.env}-${local.service}"
+  handler             = "index.handler"
+  dynamodb_table_name = module.dynamodb.table_name
+}
+
+/*
 module "cloudwatch" {
   source            = "../../modules/cloudwatch"
   function_name     = "${var.env}-${local.service}"
@@ -10,21 +27,10 @@ module "cloudwatch" {
   metric_name_space = "${var.env}-${local.service}"
 }
 
+
+
 module "s3" {
   source = "../../modules/s3"
 
   bucket_name = "${var.env}-${local.service}"
-}
-
-module "lambda" {
-  providers = {
-    aws = aws.useast1
-  }
-
-  source                      = "../../modules/lambda"
-  function_name               = "${var.env}-${local.service}"
-  handler                     = "index.handler"
-  bucket_regional_domain_name = module.s3.bucket_regional_domain_name
-  bucket_arn                  = module.s3.bucket_arn
-  bucket_id                   = module.s3.bucket_id
-}
+}*/

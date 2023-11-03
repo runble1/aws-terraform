@@ -1,28 +1,24 @@
-import { DynamoDB } from 'aws-sdk';
-import { Context, Callback } from 'aws-lambda';
+﻿console.log('Loading function');
 
-console.log('Loading function');
+const AWS = require('aws-sdk');
+const docClient = new AWS.DynamoDB.DocumentClient();
 
-const DYNAMODB_TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || '';
-
-const docClient = new DynamoDB.DocumentClient();
-
-export const handler = (event: any, context: Context, callback: Callback) => {
+exports.handler = (event, context, callback) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
 
     const params = {
         // TODO: 作成したDynamoDBテーブルの名前に書き換えてください
-        TableName: DYNAMODB_TABLE_NAME,
+        TableName: 'YYYYMMDDserverless',
         Item: {
             Artist: event.artist,
             Title: event.title
         }
     };
 
-    docClient.put(params, (err, data) => {
+    docClient.put(params, function(err, data) {
         if (err) {
             console.log('Error', err);
-            callback(Error(err.message));
+            callback(Error(err));
         } else {
             console.log('Success', data);
             callback(null, data);

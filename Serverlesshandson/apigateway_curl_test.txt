@@ -1,0 +1,11 @@
+﻿# API呼び出しURL (ご自身の環境に合わせて書き換えてください)
+export API_URL=https://XXXXXXXXXX.execute-api.AWS_REGION.amazonaws.com/demo
+
+# GETメソッドの呼び出し
+curl -X GET -i ${API_URL}/items?artist=Michael+Jackson
+
+# POSTメソッドの呼び出し
+curl -X POST -i \
+  -H 'Content-Type: application/json' \
+  -d '{"artist":"Michael Jackson","title":"Billie Jean"}' \
+  ${API_URL}/items

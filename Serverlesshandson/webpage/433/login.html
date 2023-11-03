@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AWS Serverless Handson</title>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="./img/favicon.ico">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+
+    <!-- SDK/Library for Amazon Cognito -->
+    <script type="text/javascript" src="./lib/cognito/jsbn.js"></script>
+    <script type="text/javascript" src="./lib/cognito/jsbn2.js"></script>
+    <script type="text/javascript" src="./lib/cognito/sjcl.js"></script>
+    <script type="text/javascript" src="./lib/cognito/moment.js"></script>
+    <script type="text/javascript" src="./lib/awssdk/aws-cognito-sdk.js"></script>
+    <script type="text/javascript" src="./lib/awssdk/amazon-cognito-identity.min.js"></script>
+    <script type="text/javascript" src="./lib/awssdk/aws-sdk.2.5.5.js"></script>
+
+    <script type="text/javascript" src="./lib/utils.js"></script>
+
+    <script type="text/javascript" src="./config.js"></script>
+    <script type="text/javascript" src="./cognito.js"></script>
+
+    <link rel="stylesheet" href="./styles/bootstrap.min.css">
+    <link rel="stylesheet" href="./styles/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="./styles/base.css">
+</head>
+
+<body class="bg-primary">
+    <header class="text-center">
+        <h1>AWS Serverless Handson</h1>
+        <p>Amazon Cognito</p>
+    </header>
+
+    <!-- Amazon Cognito -->
+
+    <ul class="text-muted">
+        <li class="list-group-item">
+            <section>
+                <h2>Login Page</h2>
+                <p>You are not logged in.</p>
+                <form>
+                    <div class="examples">
+                        <label for="iam-role">IAM role assigned to current session:</label>
+                        <textarea id="iam-role" class="form-control" rows="5" wrap="off" readonly></textarea>
+                    </div>
+                </form>
+            </section>
+        </li>
+    </ul>
+
+    <ul class="text-muted">
+        <li class="list-group-item">
+            <section>
+                <h2>Sign-up</h2>
+                <form id="cognito-signup">
+                    <div class="form-group">
+                        <details>
+                            <summary>
+                                <label for="cognito-signup-code">Code:</label>
+                            </summary>
+                            <textarea id="cognito-signup-code" class="form-control" readonly></textarea>
+                        </details>
+                        <script>
+                            updateTextArea($('#cognito-signup-code'), 'const signUp' + signUp.toString());
+                        </script>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cognito-signup-username">Username:</label>
+                        <input type="text" id="cognito-signup-username" placeholder="Enter username" class="form-control" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="cognito-signup-password">Password:</label>
+                        <input type="password" id="cognito-signup-password" placeholder="Enter password" class="form-control" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="cognito-signup-email">Email (for verification):</label>
+                        <input type="text" id="cognito-signup-email" placeholder="Enter email" class="form-control" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" id="cognito-signup-submit" class="btn btn-info">Sign-up</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cognito-signup-result">Result:</label>
+                        <textarea id="cognito-signup-result" class="form-control" rows="9" readonly></textarea>
+                    </div>
+                </form>
+
+                <script>
+                    $(document).ready(function($) {
+                        $("#cognito-signup").submit(function(event) {
+                            lockForm($("#cognito-signup"));
+                            event.preventDefault();
+                            signUp(
+                                $('#cognito-signup-username').val(),
+                                $('#cognito-signup-password').val(),
+                                $('#cognito-signup-email').val(),
+                                function(err, result) {
+                                    if (err) {
+                                        unlockForm($("#cognito-signup"));
+                                        $('#cognito-signup-result').val(prettyResult(err));
+                                    } else {
+                                        unlockForm($("#cognito-signup"));
+                                        clearForm($('#cognito-signup'));
+                                        $('#cognito-signup-result').val(prettyResult(result));
+                                    }
+                                }
+                            );
+                        });
+                    });
+                </script>
+            </section>
+        </li>
+
+        <li class="list-group-item">
+            <section>
+                <h2>Activation</h2>
+                <form id="cognito-activation">
+                    <div class="form-group">
+                        <details>
+                            <summary>
+                                <label for="cognito-activation-code">Code:</label>
+                            </summary>
+                            <textarea id="cognito-activation-code" class="form-control" readonly></textarea>
+                        </details>
+                        <script>
+                            updateTextArea($('#cognito-activation-code'), 'const activate' + activate.toString());
+                        </script>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cognito-activation-username">Username:</label>
+                        <input type="text" id="cognito-activation-username" class="form-control" placeholder="Enter username" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="cognito-activation-confirmationcode">Confirmation Code:</label>
+                        <input type="text" id="cognito-activation-confirmationcode" class="form-control" placeholder="Enter confirmation code" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" id="cognito-activation-submit" class="btn btn-info">Activate</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cognito-activation-result">Result:</label>
+                        <textarea id="cognito-activation-result" class="form-control" rows="9" readonly></textarea>
+                    </div>
+                </form>
+
+                <script>
+                    $(document).ready(function($) {
+                        $("#cognito-activation").submit(function(event) {
+                            lockForm($("#cognito-activation"));
+                            event.preventDefault();
+                            activate(
+                                $('#cognito-activation-username').val(),
+                                $('#cognito-activation-confirmationcode').val(),
+                                function(err, result) {
+                                    unlockForm($("#cognito-activation"));
+                                    clearForm($("#cognito-activation"));
+                                    $('#cognito-activation-result').val(prettyResult(result));
+                                }
+                            );
+                        });
+                    });
+                </script>
+            </section>
+        </li>
+
+        <li class="list-group-item">
+            <section>
+                <h2>Sign-in</h2>
+                <form id="cognito-signin">
+                    <div class="form-group">
+                        <details>
+                            <summary>
+                                <label for="cognito-signin-code">Code:</label>
+                            </summary>
+                            <textarea id="cognito-signin-code" class="form-control" readonly></textarea>
+                        </details>
+                        <script>
+                            updateTextArea($('#cognito-signin-code'), 'const signIn' + signIn.toString());
+                        </script>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cognito-signin-username">Username:</label>
+                        <input type="text" id="cognito-signin-username" class="form-control" placeholder="Enter username" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="cognito-signin-password">Password:</label>
+                        <input type="password" id="cognito-signin-password" class="form-control" placeholder="Enter password" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" id="cognito-signin-submit" class="btn btn-info">Sign-in</button>
+                    </div>
+                </form>
+
+                <script>
+                    $(document).ready(function($){
+                        $("#cognito-signin").submit(function(event) {
+                            lockForm($("#cognito-signin"));
+                            event.preventDefault(); 
+                            signIn(
+                                $('#cognito-signin-username').val(),
+                                $('#cognito-signin-password').val(), {
+                                    onSuccess: function(result) {
+                                        $(location).attr('href', 'mypage.html');
+                                    },
+                                    onFailure: function(err) {
+                                        unlockForm($("#cognito-signin"));
+                                    }
+                                }
+                            );
+                        });
+                    });
+                </script>
+            </section>
+        </li>
+    </ul>
+
+    <footer class="text-right">
+        <p>Powered by
+            <a href="https://aws.amazon.com/" target="blank"><img src="./img/aws-logo.png" style="height: 1.9em;"></a>
+        </p>
+    </footer>
+</body>
+
+</html>
