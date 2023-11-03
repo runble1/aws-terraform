@@ -73,3 +73,12 @@ override.tf.json
 .terraformrc
 terraform.rc
 .terraform.lock.hcl
+
+output.txt
+
+# archive
+archive*
+
+# app
+app/dist/**
+**/node_modules/**

@@ -1,7 +1,7 @@
 import { DynamoDB } from 'aws-sdk';
 import { Context, Callback } from 'aws-lambda';
 
-console.log('Loading function');
+console.log('Loading write function');
 
 const DYNAMODB_TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || '';
 
