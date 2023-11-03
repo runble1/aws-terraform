@@ -1,4 +1,0 @@
-{
-    "artist": "Michael Jackson",
-    "title": "Thriller"
-}

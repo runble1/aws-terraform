@@ -1,4 +1,0 @@
-{
-    "artist": "Madonna",
-    "title": "Like a Virgin"
-}
