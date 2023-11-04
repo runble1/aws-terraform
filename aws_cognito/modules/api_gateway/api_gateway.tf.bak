@@ -4,18 +4,53 @@ resource "aws_api_gateway_rest_api" "this" {
   body = jsonencode({
     openapi = "3.0.1"
     info = {
-      title   = "api"
+      title   = "example"
       version = "1.0"
     }
     paths = {
       "/get-path" = {
         get = {
+          parameters = [
+            {
+              name     = "artist"
+              in       = "query"
+              required = true
+              schema = {
+                type = "string"
+              }
+            }
+          ]
+          responses = {
+            "200" = {
+              description = "200 response"
+              content = {
+                "application/json" = {
+                  schema = {
+                    type = "object"
+                  }
+                }
+              }
+            }
+          }
           x-amazon-apigateway-integration = {
             httpMethod           = "POST" # LambdaへのアクセスはPOST
             payloadFormatVersion = "1.0"
-            type                 = "AWS_PROXY" # Lambda Proxy 統合
+            type                 = "AWS"
+            #type                 = "AWS_PROXY" # Lambda Proxy 統合
             uri         = "${var.read_function_invoke_arn}"
             credentials = "${aws_iam_role.api_gateway_role.arn}"
+            requestTemplates = {
+              "application/json" = <<EOF
+{
+  "artist": "$input.params('artist')"
+}
+EOF
+            }
+            responses = {
+              default = {
+                statusCode = "200"
+              }
+            }
           }
         }
       },
@@ -24,7 +59,8 @@ resource "aws_api_gateway_rest_api" "this" {
           x-amazon-apigateway-integration = {
             httpMethod           = "POST"
             payloadFormatVersion = "1.0"
-            type                 = "AWS_PROXY"
+            type                 = "AWS"
+            #type                 = "AWS_PROXY"
             uri         = "${var.write_function_invoke_arn}"
             credentials = "${aws_iam_role.api_gateway_role.arn}"
           }

@@ -1,1 +1,1 @@
-[{"Title":"Thriller","Artist":"Michael Jackson"}]
+{"statusCode":200,"headers":{"Content-Type":"application/json"},"body":"[{\"Title\":\"Thriller\",\"Artist\":\"Michael Jackson\"}]"}
