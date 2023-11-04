@@ -14,8 +14,8 @@ resource "aws_api_gateway_rest_api" "this" {
             httpMethod           = "POST" # LambdaへのアクセスはPOST
             payloadFormatVersion = "1.0"
             type                 = "AWS_PROXY" # Lambda Proxy 統合
-            uri         = "${var.read_function_invoke_arn}"
-            credentials = "${aws_iam_role.api_gateway_role.arn}"
+            uri                  = "${var.read_function_invoke_arn}"
+            credentials          = "${aws_iam_role.api_gateway_role.arn}"
           }
         }
       },
@@ -25,8 +25,8 @@ resource "aws_api_gateway_rest_api" "this" {
             httpMethod           = "POST"
             payloadFormatVersion = "1.0"
             type                 = "AWS_PROXY"
-            uri         = "${var.write_function_invoke_arn}"
-            credentials = "${aws_iam_role.api_gateway_role.arn}"
+            uri                  = "${var.write_function_invoke_arn}"
+            credentials          = "${aws_iam_role.api_gateway_role.arn}"
           }
         }
       }
