@@ -18,6 +18,13 @@ module "lambda" {
   dynamodb_table_name = module.dynamodb.table_name
 }
 
+module "api_gateway" {
+  source                    = "../../modules/api_gateway"
+  function_name             = "${var.env}-${local.service}"
+  write_function_invoke_arn = module.lambda.write_function_invoke_arn
+  read_function_invoke_arn  = module.lambda.read_function_invoke_arn
+}
+
 /*
 module "cloudwatch" {
   source            = "../../modules/cloudwatch"
