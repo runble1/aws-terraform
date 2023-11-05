@@ -1,3 +1,4 @@
+// GET は OpenAPI 記法、POST は Terraform のリソースで定義する
 resource "aws_api_gateway_rest_api" "this" {
   name = "${var.function_name}-api"
 
@@ -7,25 +8,28 @@ resource "aws_api_gateway_rest_api" "this" {
       title   = "api"
       version = "1.0"
     }
+    securityDefinitions = {
+      cognito_authorizer = {
+        type                         = "apiKey",
+        name                         = "Authorization",
+        in                           = "header",
+        x-amazon-apigateway-authtype = "cognito_user_pools",
+        x-amazon-apigateway-authorizer = {
+          type                         = "cognito_user_pools",
+          providerARNs                 = [var.user_pool_arn],
+          authorizerResultTtlInSeconds = 300
+        }
+      }
+    },
     paths = {
       "/get-path" = {
         get = {
+          security = [{ cognito_authorizer = [] }],
           x-amazon-apigateway-integration = {
             httpMethod           = "POST" # LambdaへのアクセスはPOST
             payloadFormatVersion = "1.0"
             type                 = "AWS_PROXY" # Lambda Proxy 統合
             uri                  = "${var.read_function_invoke_arn}"
-            credentials          = "${aws_iam_role.api_gateway_role.arn}"
-          }
-        }
-      },
-      "/post-path" = {
-        post = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "POST"
-            payloadFormatVersion = "1.0"
-            type                 = "AWS_PROXY"
-            uri                  = "${var.write_function_invoke_arn}"
             credentials          = "${aws_iam_role.api_gateway_role.arn}"
           }
         }
@@ -36,6 +40,30 @@ resource "aws_api_gateway_rest_api" "this" {
   endpoint_configuration {
     types = ["REGIONAL"]
   }
+}
+
+resource "aws_api_gateway_resource" "post_resource" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  parent_id   = aws_api_gateway_rest_api.this.root_resource_id
+  path_part   = "post-path"
+}
+
+resource "aws_api_gateway_method" "post_method" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  resource_id = aws_api_gateway_resource.post_resource.id
+  http_method = "POST"
+  #authorization = "AWS_IAM"
+  authorization = aws_api_gateway_authorizer.this.type
+  authorizer_id = aws_api_gateway_authorizer.this.id
+}
+
+resource "aws_api_gateway_integration" "post_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.post_resource.id
+  http_method             = aws_api_gateway_method.post_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.write_function_invoke_arn
 }
 
 resource "aws_api_gateway_deployment" "this" {
@@ -87,9 +115,17 @@ resource "aws_api_gateway_method_settings" "this" {
   }
 }
 
+resource "aws_api_gateway_authorizer" "this" {
+  name          = "${var.function_name}-authorizer"
+  type          = "COGNITO_USER_POOLS"
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  provider_arns = [var.user_pool_arn]
+}
+
 # ====================
 # Test
 # ====================
+/*
 resource "null_resource" "test_api_gateway" {
   # API Gatewayがデプロイされてからこのリソースを作成するように依存関係を設定
   depends_on = [aws_api_gateway_deployment.this]
@@ -106,4 +142,4 @@ EOF
   triggers = {
     always_run = "${timestamp()}"
   }
-}
+}*/
