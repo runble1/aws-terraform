@@ -58,19 +58,19 @@ resource "aws_api_gateway_stage" "this" {
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.this.arn
     format = jsonencode({
-      request_id        = "$context.requestId",
-      ip                = "$context.identity.sourceIp",
-      user_agent        = "$context.identity.userAgent",
-      request_time      = "$context.requestTime",
-      http_method       = "$context.httpMethod",
-      resource_path     = "$context.resourcePath",
-      status            = "$context.status",
-      response_latency  = "$context.responseLatency",
-      integration_error = "$context.integrationErrorMessage",
+      request_id         = "$context.requestId",
+      ip                 = "$context.identity.sourceIp",
+      user_agent         = "$context.identity.userAgent",
+      request_time       = "$context.requestTime",
+      http_method        = "$context.httpMethod",
+      resource_path      = "$context.resourcePath",
+      status             = "$context.status",
+      response_latency   = "$context.responseLatency",
+      integration_error  = "$context.integrationErrorMessage",
       integration_status = "$context.integrationStatus",
-      api_id            = "$context.apiId",
-      protocol          = "$context.protocol",
-      response_length   = "$context.responseLength"
+      api_id             = "$context.apiId",
+      protocol           = "$context.protocol",
+      response_length    = "$context.responseLength"
     })
   }
 }
@@ -81,8 +81,8 @@ resource "aws_api_gateway_method_settings" "this" {
   method_path = "*/*"
 
   settings {
-    metrics_enabled = true
-    logging_level   = "INFO"
+    metrics_enabled    = true
+    logging_level      = "INFO"
     data_trace_enabled = true
   }
 }

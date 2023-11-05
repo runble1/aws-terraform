@@ -18,3 +18,7 @@ output "post_endpoint_url" {
   description = "The URL of the API endpoint"
   value       = module.api_gateway.post_endpoint_url
 }
+
+output "identity_pool_id" {
+  value = module.cognito.identity_pool_id
+}

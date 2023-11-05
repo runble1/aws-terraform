@@ -2,10 +2,6 @@ locals {
   service = "cognito"
 }
 
-module "cognito" {
-  source = "../../modules/cognito"
-}
-
 module "dynamodb" {
   source       = "../../modules/dynamodb"
   service_name = "${var.env}-${local.service}"
@@ -23,6 +19,11 @@ module "api_gateway" {
   function_name             = "${var.env}-${local.service}"
   write_function_invoke_arn = module.lambda.write_function_invoke_arn
   read_function_invoke_arn  = module.lambda.read_function_invoke_arn
+}
+
+module "cognito" {
+  source        = "../../modules/cognito"
+  function_name = "${var.env}-${local.service}"
 }
 
 /*
