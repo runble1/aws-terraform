@@ -10,7 +10,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "typescript": "^4.0.0",
+    "typescript": "^5.0.0",
     "@types/node": "^14.0.0"
   },
   "engines": {
