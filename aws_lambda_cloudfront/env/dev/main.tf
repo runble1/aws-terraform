@@ -10,12 +10,6 @@ module "cloudwatch" {
   metric_name_space = "${var.env}-${local.service}"
 }
 
-module "s3" {
-  source = "../../modules/s3"
-
-  bucket_name = "${var.env}-${local.service}"
-}
-
 module "lambda" {
   providers = {
     aws = aws.useast1
@@ -27,4 +21,10 @@ module "lambda" {
   bucket_regional_domain_name = module.s3.bucket_regional_domain_name
   bucket_arn                  = module.s3.bucket_arn
   bucket_id                   = module.s3.bucket_id
+}
+
+module "s3" {
+  source = "../../modules/s3"
+
+  bucket_name = "${var.env}-${local.service}"
 }
