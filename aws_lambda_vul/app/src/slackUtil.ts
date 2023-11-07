@@ -6,11 +6,11 @@ const SLACK_URL = "https://slack.com/api/chat.postMessage";
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
 export async function handleSlackRequests(headers: any, body: any): Promise<any> {
-  const slackRetryResponse = await handleSlackRetry(headers);
-  if (!slackRetryResponse) return null;
-
   const slackChallengeResponse = await handleSlackChallenge(body);
   if (!slackChallengeResponse) return null;
+
+  const slackRetryResponse = await handleSlackRetry(headers);
+  if (!slackRetryResponse) return null;
   
   const slackEventResponse = await handleSlackEvent(body);
   if (!slackEventResponse) return null;
@@ -27,22 +27,19 @@ async function handleSlackRetry(headers: any): Promise<any> {
 }
 
 async function handleSlackChallenge(body: any): Promise<any> {
-  if (body?.challenge) {
-    return true // challenge が成功した場合は処理継続
-  } else if (!body?.challenge) {
-    return true;  // challenge プロパティが存在しない場合は処理継続
+  if (!body?.challenge) {
+    return true;
   }
   console.log("Fail Slack challenge")
-  return null;
+  return null; //challenge プロパティが存在する場合終了
 }
 
 async function handleSlackEvent(body: any): Promise<any> {
-  // Slack Event が正常な場合は処理継続
-  if (body?.event?.type === 'message' && body.event.user === "UCUSXHPHT") {
+  if (body?.event?.type === 'message') {
     return true; 
   }
   console.log("Fail Vul Feed");
-  return null;
+  return null; // Slack Event が message 以外なら終了
 }
 
 export async function postMessageToThread(channel: string, text: string, thread_ts: string): Promise<void> {

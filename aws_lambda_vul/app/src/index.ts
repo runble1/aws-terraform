@@ -13,7 +13,7 @@ export async function evaluateSSVC(event: any): Promise<any> {
   const slackResponse = await handleSlackRequests(headers, body);
   if (!slackResponse) return {
     'statusCode': 200,
-    'body': JSON.stringify({ result: 'End' }),
+    'body': body.challenge
   };
 
   const messageText = body.event.text;

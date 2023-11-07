@@ -25,13 +25,15 @@ https://www.cisa.gov/known-exploited-vulnerabilities-catalog
 
 ## Development
 ### envrc
-vi .envrc
 ```
-export SLACK_BOT_TOKEN=xxxx-xxxxxxxxxxxx-xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
+export TF_VAR_slack_bot_token=xxxx
+
 ```
 
-### Slack APP
-https://api.slack.com/apps/A0637B2BQN6/general?
+### slack channel
+```
+/invite @vul-ssvc 
+```
 
 ## Deploy
 ```
