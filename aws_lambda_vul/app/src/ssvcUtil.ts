@@ -6,7 +6,7 @@ import { evaluateExploitation } from './ssvcUtilExploitation';
 
 export async function mapCVSSMetricsToSSVCParameters(cveId: string, metrics: CVSSMetrics): Promise<SSVCParameters> {
   // 今回のターゲットの露出度
-  const ssvcEvaluation = new SSVCEvaluation(Exposure.Controlled);
+  const ssvcEvaluation = new SSVCEvaluation(Exposure.Small);
   
   // SSVC parameters 評価
   const exploitation = await evaluateExploitation(cveId);
@@ -87,8 +87,12 @@ function determineSituatedSafetyImpact(metrics: CVSSMetrics): SituatedSafetyImpa
       (metrics.confidentialityImpact === 'MEDIUM' || metrics.integrityImpact === 'MEDIUM' || metrics.availabilityImpact === 'MEDIUM')) {
     return SituatedSafetyImpact.Minor;
   }
-  // すべてのメトリクスが低い場合、危険性は最も低いと評価する
-  else if (metrics.confidentialityImpact === 'LOW' && metrics.integrityImpact === 'LOW' && metrics.availabilityImpact === 'LOW') {
+  // すべてのメトリクスがLOWまたはNONEの場合、危険性は最も低いと評価する
+  else if (
+    (metrics.confidentialityImpact === 'LOW' || metrics.confidentialityImpact === 'NONE') &&
+    (metrics.integrityImpact === 'LOW' || metrics.integrityImpact === 'NONE') &&
+    (metrics.availabilityImpact === 'LOW' || metrics.availabilityImpact === 'NONE')
+  ) {
     return SituatedSafetyImpact.None;
   }
   // それ以外の場合、危険性は不明であると評価する

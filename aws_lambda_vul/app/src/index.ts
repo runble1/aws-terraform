@@ -21,8 +21,15 @@ export async function evaluateSSVC(event: any): Promise<any> {
   const thread_ts = body.event.thread_ts || body.event.ts;
 
   const cveId = extractCVEId(messageText);
+  if (!cveId) {
+    console.log("CVE ID")
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ result: 'end' }),
+    };
+  }
 
-  if (cveId) {
+  try {
     // CVSS
     const cvssMetrics = await getCVEById(cveId);
     const cvssMessage = formatCVSSMetrics(cvssMetrics);
@@ -36,15 +43,22 @@ export async function evaluateSSVC(event: any): Promise<any> {
     await postMessageToThread(channel, resultMessage, thread_ts);
 
     // メンション
-    if (cvssMetrics.baseScore >= 8 || 
-      cvssMetrics.baseSeverity.toLowerCase() === 'critical' || 
-      priority.toLowerCase() === 'out-of-cycle' || 
-      priority.toLowerCase() === 'immediate') {
-    const mentionMessage = "<!channel>";
-    await postMessageToThread(channel, mentionMessage, thread_ts);
-  }
+    if (priority.toLowerCase() === 'out-of-cycle' || priority.toLowerCase() === 'immediate') {
+      const mentionMessage = "<!channel>";
+      await postMessageToThread(channel, mentionMessage, thread_ts);
+    }
+  } catch (error: unknown) { // TypeScriptの場合はerrorの型をunknownと明示
+    let errorMessage: string;
+    if (error instanceof Error) {
+      errorMessage = `Error retrieving CVSS metrics for CVE ID ${cveId}: ${error.message}`;
+    } else {
+      errorMessage = `An unknown error occurred while retrieving CVSS metrics for CVE ID ${cveId}`;
+    }
+    console.error(errorMessage);
+    await postMessageToThread(channel, errorMessage, thread_ts);
   }
 
+  console.log("Processing completed")
   return {
     statusCode: 200,
     body: JSON.stringify({ result: 'end' }),

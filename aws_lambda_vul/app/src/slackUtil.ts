@@ -36,7 +36,10 @@ async function handleSlackChallenge(body: any): Promise<any> {
 
 async function handleSlackEvent(body: any): Promise<any> {
   if (body?.event?.type === 'message') {
-    return true; 
+    // スレッドメッセージには反応しない
+    if (!body.event.thread_ts || body.event.thread_ts === body.event.ts) {
+      return true;
+    }
   }
   console.log("Fail Vul Feed");
   return null; // Slack Event が message 以外なら終了
