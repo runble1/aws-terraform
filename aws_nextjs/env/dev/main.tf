@@ -7,6 +7,13 @@ module "cognito" {
   function_name = "${var.env}-${local.service}"
 }
 
+module "cognito_google" {
+  source        = "../../modules/cognito_google"
+  function_name = "${var.env}-${local.service}"
+  google_client_id = var.google_client_id
+  google_client_secret = var.google_client_secret
+}
+
 /*
 module "dynamodb" {
   source       = "../../modules/dynamodb"
