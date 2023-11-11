@@ -1,5 +1,5 @@
 locals {
-  service = "cognito"
+  service = "nextjs-login"
 }
 
 module "cognito" {
@@ -7,6 +7,7 @@ module "cognito" {
   function_name = "${var.env}-${local.service}"
 }
 
+/*
 module "dynamodb" {
   source       = "../../modules/dynamodb"
   service_name = "${var.env}-${local.service}"
@@ -17,7 +18,7 @@ module "lambda" {
   function_name       = "${var.env}-${local.service}"
   handler             = "index.handler"
   dynamodb_table_name = module.dynamodb.table_name
-}
+}*/
 
 /*
 module "api_gateway" {

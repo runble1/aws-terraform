@@ -1,24 +1,30 @@
-/*
-output "function_url" {
-  description = "Slack Event Subscriptions URL"
-  value       = module.lambda.function_url
-}
-
-output "cloudfront_distribution_url" {
-  value       = module.lambda.cloudfront_distribution_url
-  description = "The URL of the CloudFront distribution"
-}*/
-
-output "get_endpoint_url" {
-  description = "The URL of the API endpoint"
-  value       = module.api_gateway.get_endpoint_url
-}
-
-output "post_endpoint_url" {
-  description = "The URL of the API endpoint"
-  value       = module.api_gateway.post_endpoint_url
-}
-
 output "identity_pool_id" {
   value = module.cognito.identity_pool_id
+}
+
+output "user_pool_id" {
+  value = module.cognito.user_pool_id
+}
+
+output "client_secret" {
+  value = module.cognito.client_secret
+  sensitive = true
+}
+
+output "cognito_user_pool_client_id" {
+  value = module.cognito.cognito_user_pool_client_id
+}
+
+
+output "google_user_pool_id" {
+  value = module.cognito.user_pool_id_google
+}
+
+output "google_client_secret" {
+  value = module.cognito.client_secret_google
+  sensitive = true
+}
+
+output "google_cognito_user_pool_client_id" {
+  value = module.cognito.cognito_user_pool_client_id_google
 }
