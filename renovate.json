@@ -8,10 +8,9 @@
   "branchConcurrentLimit": 0,
   "packageRules": [
     {
-      "matchUpdateTypes": ["patch"],
+      "matchUpdateTypes": ["patch", "minor", "pin", "digest"],
       "automerge": true,
-      "platformAutomerge": true,
-      "ignoreTests": true
+      "platformAutomerge": true
     }
   ]
 }
