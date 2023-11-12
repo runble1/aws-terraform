@@ -10,14 +10,14 @@ resource "aws_cognito_user_pool_domain" "google" {
 }
 
 resource "aws_cognito_user_pool_client" "google" {
-  name = "${var.function_name}-client-google"
+  name         = "${var.function_name}-client-google"
   user_pool_id = aws_cognito_user_pool.google.id
 
   callback_urls = ["http://localhost:3000/api/auth/callback/cognito"]
 
   allowed_oauth_flows_user_pool_client = true
-  allowed_oauth_flows = ["code", "implicit"]
-  allowed_oauth_scopes = ["phone", "email", "openid", "profile", "aws.cognito.signin.user.admin"]
+  allowed_oauth_flows                  = ["code", "implicit"]
+  allowed_oauth_scopes                 = ["phone", "email", "openid", "profile", "aws.cognito.signin.user.admin"]
 
   generate_secret = true
 
@@ -45,8 +45,8 @@ resource "aws_cognito_identity_provider" "google" {
   provider_type = "Google"
 
   provider_details = {
-    client_id     = var.google_client_id
-    client_secret = var.google_client_secret
+    client_id        = var.google_client_id
+    client_secret    = var.google_client_secret
     authorize_scopes = "openid email profile"
   }
 

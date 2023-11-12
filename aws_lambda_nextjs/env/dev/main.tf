@@ -23,9 +23,9 @@ module "cloudwatch" {
 }
 
 module "lambda" {
-  source              = "../../modules/lambda"
-  function_name       = "${var.env}-${local.service}"
-  handler             = "server.handler"
+  source        = "../../modules/lambda"
+  function_name = "${var.env}-${local.service}"
+  handler       = "server.handler"
   #dynamodb_table_name = module.dynamodb.table_name
 }
 

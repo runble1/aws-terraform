@@ -7,5 +7,5 @@ output "client_secret_google" {
 }
 
 output "cognito_user_pool_client_id_google" {
-  value       = aws_cognito_user_pool_client.google.id
+  value = aws_cognito_user_pool_client.google.id
 }
