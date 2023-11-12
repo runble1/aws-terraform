@@ -41,35 +41,12 @@ docker tag nextjs-app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/lambda_container_nextjs:latest
 ```
 
-### 2 Network
+### 2 lambda
 ```
-terraform apply -target=module.network
-```
-
-
-### 4 SSM
-tagを最初だけ手打ち
-```
-terraform apply --target=module.ssm
+terraform apply
 ```
 
-
-### 7 Github Actions でデプロイ
-- タスク定義が更新された場合（Terraform）
-- アプリが更新された場合（Github Actions）
-
-## ECS Exec
-```
-aws ecs execute-command  \
-    --cluster nextjs-cluster \
-    --task <TASK_ID> \
-    --container nextjs-container \
-    --interactive \
-    --command "/bin/sh"
-```
-
-
-## 9 Destroy
+## 100 Destroy
 ECRのimageを手動で削除
 terraform destroy
 
