@@ -23,7 +23,7 @@ terraform {
   backend "s3" {
     region  = "ap-northeast-1"
     bucket  = "runble1-tfstate"
-    key     = "all_in_one/aws_nextjs/terraform.tfstate"
+    key     = "all_in_one/aws_cognito_google/terraform.tfstate"
     encrypt = true
   }
 }
