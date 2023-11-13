@@ -1,8 +1,9 @@
 # Next.js with Docker Compose
 
 ## ローカル開発
-### Build
+### 起動
 ```
+npm install
 docker compose -f docker-compose.dev.yml up -d
 or
 docker compose -f docker-compose.dev.yml build

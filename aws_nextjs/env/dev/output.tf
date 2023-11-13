@@ -7,7 +7,7 @@ output "user_pool_id" {
 }
 
 output "client_secret" {
-  value = module.cognito.client_secret
+  value     = module.cognito.client_secret
   sensitive = true
 }
 
@@ -21,7 +21,7 @@ output "google_user_pool_id" {
 }
 
 output "google_client_secret" {
-  value = module.cognito_google.client_secret_google
+  value     = module.cognito_google.client_secret_google
   sensitive = true
 }
 
