@@ -1,0 +1,1 @@
+# Cognito + Google認証
