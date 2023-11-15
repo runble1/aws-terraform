@@ -4,7 +4,7 @@
   "ignorePresets": [":prHourlyLimit2"],
   "timezone": "Asia/Tokyo",
   "schedule": ["after 8am on saturday", "before 10am on saturday"],
-  "dependencyDashboard": false,
+  "dependencyDashboard": false
   "branchConcurrentLimit": 0
   "packageRules": [
     {
