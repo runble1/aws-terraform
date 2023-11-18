@@ -1,5 +1,5 @@
 # Multi-stage buildでNext.jsをビルド
-FROM node:20 AS builder
+FROM node:21 AS builder
 WORKDIR /build
 COPY package*.json ./
 RUN npm ci
