@@ -25,20 +25,10 @@ module "s3" {
   bucket_name = "${var.env}-${local.service}"
 }
 
-module "api_gateway" {
-  source              = "../../modules/api_gateway"
-  function_name       = module.lambda.function_name
-  function_invoke_arn = module.lambda.function_invoke_arn
-  depends_on          = [module.lambda]
-}
-
-
-/*
 module "cloudfront" {
   source                      = "../../modules/cloudfront"
-  function_name               = local.service
-  lambda_qualified_arn        = module.lambda.lambda_function_qualified_arn
+  function_url                = module.lambda.function_url
   bucket_regional_domain_name = module.s3.bucket_regional_domain_name
   bucket_arn                  = module.s3.bucket_arn
   bucket_id                   = module.s3.bucket_id
-}*/
+}

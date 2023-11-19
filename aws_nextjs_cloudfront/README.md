@@ -1,12 +1,4 @@
-# Lambda@EdgeでNext.js動かす、Lambda@edgeはDockerでデプロイ
-
-## Deploy
-aws-vault
-```
-aws-vault exec test
-terraform init
-terraform apply
-```
+# CloudFront + Lambda Function URL + Next.js
 
 ### 1. コンテナレジストリとコードリポジトリ作成
 env/dev

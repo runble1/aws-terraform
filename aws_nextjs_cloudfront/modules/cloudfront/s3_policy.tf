@@ -1,5 +1,6 @@
 
 #S3バケットポリシー（OACのみから許可する）
+/*
 data "aws_iam_policy_document" "allow_access_from_cloudfront" {
   statement {
     principals {
@@ -18,7 +19,7 @@ data "aws_iam_policy_document" "allow_access_from_cloudfront" {
       values   = [aws_cloudfront_distribution.this.arn]
     }
   }
-}
+}*/
 
 ##バケットポリシーのアタッチ
 /*

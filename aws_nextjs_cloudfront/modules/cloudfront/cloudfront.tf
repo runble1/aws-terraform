@@ -1,39 +1,38 @@
 resource "aws_cloudfront_distribution" "this" {
+  enabled = true
+
+  # オリジン設定
   origin {
-    domain_name              = var.bucket_regional_domain_name
-    origin_id                = "S3Origin"
-    origin_access_control_id = aws_cloudfront_origin_access_control.this.id
+    domain_name = "minxvqeagjyfbnrtu3do72bglq0lnuio.lambda-url.ap-northeast-1.on.aws"
+    #domain_name = replace(var.function_url, "https://", "") # "https://" を取り除く
+    origin_id = "lambdaFunctionURL"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
   }
 
-  enabled             = true
-  is_ipv6_enabled     = true
-  default_root_object = "index.html"
-
+  # ビヘイビア設定
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3Origin"
+    target_origin_id = "lambdaFunctionURL"
 
     forwarded_values {
-      query_string = false
+      query_string = true
+
       cookies {
         forward = "none"
       }
     }
 
-    #viewer_protocol_policy = "redirect-to-https"
-    viewer_protocol_policy = "allow-all"
+    viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
-
-    lambda_function_association {
-      event_type = "origin-request"
-      # event_type   = "viewer-request"
-      lambda_arn = var.lambda_qualified_arn
-      #lambda_arn   = aws_lambda_function.this.qualified_arn
-      include_body = true
-    }
   }
 
   restrictions {
@@ -47,6 +46,14 @@ resource "aws_cloudfront_distribution" "this" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+
+  # ログの設定（オプション）
+  /*
+  logging_config {
+    include_cookies = false
+    bucket          = "mylogs.s3.amazonaws.com"
+    prefix          = "myprefix"
+  }*/
 }
 
 resource "aws_cloudfront_origin_access_control" "this" {
