@@ -1,4 +1,4 @@
-# CloudFront + Lambda Function URL + Next.js
+# Lambda + API Gateway + Next.js
 
 ### 1. コンテナレジストリとコードリポジトリ作成
 env/dev
