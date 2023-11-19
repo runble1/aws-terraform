@@ -30,7 +30,8 @@ resource "aws_cloudfront_distribution" "this" {
     lambda_function_association {
       event_type = "origin-request"
       # event_type   = "viewer-request"
-      lambda_arn   = var.lambda_qualified_arn
+      lambda_arn = var.lambda_qualified_arn
+      #lambda_arn   = aws_lambda_function.this.qualified_arn
       include_body = true
     }
   }
