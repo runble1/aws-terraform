@@ -3,7 +3,7 @@ resource "aws_cloudfront_distribution" "this" {
 
   # オリジン設定
   origin {
-    origin_id = var.api_gateway_id
+    origin_id   = var.api_gateway_id
     domain_name = "${var.api_gateway_id}.execute-api.ap-northeast-1.amazonaws.com"
     origin_path = "/prod"
 
@@ -19,8 +19,8 @@ resource "aws_cloudfront_distribution" "this" {
   default_cache_behavior {
     target_origin_id = var.api_gateway_id
 
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
+    allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods  = ["GET", "HEAD"]
 
     forwarded_values {
       query_string = true

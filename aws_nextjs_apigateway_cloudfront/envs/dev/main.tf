@@ -34,7 +34,7 @@ module "api_gateway" {
 
 module "cloudfront" {
   source                      = "../../modules/cloudfront"
-  api_gateway_id               = module.api_gateway.api_gateway_id
+  api_gateway_id              = module.api_gateway.api_gateway_id
   bucket_regional_domain_name = module.s3.bucket_regional_domain_name
   bucket_arn                  = module.s3.bucket_arn
   bucket_id                   = module.s3.bucket_id
