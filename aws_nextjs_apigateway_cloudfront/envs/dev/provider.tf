@@ -16,7 +16,7 @@ terraform {
   backend "s3" {
     region  = "ap-northeast-1"
     bucket  = "runble1-tfstate"
-    key     = "all_in_one/aws_lambda_apigateway/terraform.tfstate"
+    key     = "all_in_one/aws_nextjs_apigateay_cloudfront/terraform.tfstate"
     encrypt = true
   }
 }

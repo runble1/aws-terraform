@@ -31,3 +31,11 @@ module "api_gateway" {
   function_invoke_arn = module.lambda.function_invoke_arn
   depends_on          = [module.lambda]
 }
+
+module "cloudfront" {
+  source                      = "../../modules/cloudfront"
+  api_gateway_id              = module.api_gateway.api_gateway_id
+  bucket_regional_domain_name = module.s3.bucket_regional_domain_name
+  bucket_arn                  = module.s3.bucket_arn
+  bucket_id                   = module.s3.bucket_id
+}
