@@ -4,7 +4,7 @@ resource "aws_cloudfront_distribution" "this" {
   # オリジン設定
   origin {
     domain_name = "minxvqeagjyfbnrtu3do72bglq0lnuio.lambda-url.ap-northeast-1.on.aws"
-    #domain_name = replace(var.function_url, "https://", "") # "https://" を取り除く
+    #domain_name = var.function_url_domain
     origin_id = "lambdaFunctionURL"
 
     custom_origin_config {
