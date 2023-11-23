@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_cloudfront_distribution" "this" {
-  enabled = true
+  enabled             = true
   is_ipv6_enabled     = true
   comment             = "Some comment"
   default_root_object = "index.html"

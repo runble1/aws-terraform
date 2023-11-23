@@ -2,12 +2,6 @@ locals {
   service = "nextjs-s3"
 }
 
-/*
-module "cloudwatch" {
-  source  = "../../modules/cloudwatch"
-  service = local.service
-}*/
-
 module "s3" {
   source      = "../../modules/s3"
   bucket_name = "${data.aws_caller_identity.self.account_id}-${var.env}-${local.service}-origin-contents"
