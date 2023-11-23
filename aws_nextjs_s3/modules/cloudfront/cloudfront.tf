@@ -1,17 +1,24 @@
+locals {
+  s3_origin_id = "myS3Origin"
+}
+
 resource "aws_cloudfront_distribution" "this" {
   enabled = true
+  is_ipv6_enabled     = true
+  comment             = "Some comment"
+  default_root_object = "index.html"
 
   # オリジン設定
   origin {
     domain_name              = var.bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.this.id
-    origin_id                = var.bucket_id
+    origin_id                = local.s3_origin_id
   }
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.bucket_id
+    target_origin_id = local.s3_origin_id
 
     forwarded_values {
       query_string = false
@@ -32,7 +39,7 @@ resource "aws_cloudfront_distribution" "this" {
     path_pattern     = "/content/immutable/*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = var.bucket_id
+    target_origin_id = local.s3_origin_id
 
     forwarded_values {
       query_string = false
@@ -71,6 +78,7 @@ resource "aws_cloudfront_distribution" "this" {
   }*/
 }
 
+// OAC
 resource "aws_cloudfront_origin_access_control" "this" {
   name                              = "nextjs-origin-access-control"
   description                       = "Example Policy"
