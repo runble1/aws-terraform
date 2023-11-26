@@ -17,7 +17,7 @@
   "launchType": "FARGATE",
   "loadBalancers": [
     {
-      "containerName": "nextjs-container",
+      "containerName": "{{ env `SERVICE_NAME`}}-container",
       "containerPort": 3000,
       "targetGroupArn": "{{ or (env `TARGET_GROUP_ARN` ``) (tfstate `module.alb.aws_lb_target_group.for_webserver.arn`) }}"
     }
@@ -26,7 +26,7 @@
     "awsvpcConfiguration": {
       "assignPublicIp": "DISABLED",
       "securityGroups": [
-        "{{ or (env `SECURITY_GROUP_ID` ``) (tfstate `module.ecs2.aws_security_group.ecs.id`) }}"
+        "{{ or (env `SECURITY_GROUP_ID` ``) (tfstate `module.ecs.aws_security_group.ecs.id`) }}"
       ],
       "subnets": [
         "{{ or (env `SUBNET_1A_ID` ``) (tfstate `module.network.aws_subnet.private_1a.id`) }}",

@@ -1,20 +1,26 @@
 # Next.js with Docker Compose
 
+## Overview
+dev と prod の Docker compose がある。
+
 ## ローカル開発
 ### 起動
 ```
 npm install
 docker compose -f docker-compose.dev.yml up -d
-or
-docker compose -f docker-compose.dev.yml build
-docker compose -f docker-compose.dev.yml start
 ```
 
 ### 確認
 http://localhost:3000/
 ```
-docker compose ps -f docker-compose.dev.yml
+docker compose -f docker-compose.dev.yml ps
 docker exec -it next-app sh
+```
+
+### 停止・再起動
+```
+docker compose -f docker-compose.dev.yml stop
+docker compose -f docker-compose.dev.yml start
 ```
 
 ### シャットダウン
@@ -23,11 +29,11 @@ docker compose -f docker-compose.dev.yml down
 ```
 
 ## 手動デプロイ
-### 前提
+### ECR認証
 ```
 aws-vault exec test
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
-export REPOSITORY_URL=${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/nextjs
+export REPOSITORY_URL=${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/nextjs-ecs
 aws ecr --region ap-northeast-1 get-login-password | docker login --username AWS --password-stdin https://${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/
 ```
 

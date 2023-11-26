@@ -1,5 +1,7 @@
 resource "aws_s3_bucket" "origin_contents" {
   bucket = var.bucket_name
+
+  force_destroy = true
 }
 
 resource "null_resource" "upload_to_s3" {
