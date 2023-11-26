@@ -1,6 +1,5 @@
 # ECS + Fargate
 
-
 ## Deploy
 aws-vault
 ```
@@ -8,7 +7,6 @@ aws-vault exec test
 terraform init
 terraform apply
 ```
-
 aws-vualt + Docker
 ```
 aws-vault exec test

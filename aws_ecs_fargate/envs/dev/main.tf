@@ -1,5 +1,5 @@
 locals {
-  service = "nextjs"
+  service = "nextjs-ecs"
 }
 
 module "ecr" {
@@ -8,6 +8,7 @@ module "ecr" {
   holding_count = 5
 }
 
+/*
 module "network" {
   source  = "../../modules/network"
   env     = var.env
@@ -41,3 +42,4 @@ module "ecs2" {
   alb_sg_id            = module.alb.alb_sg_id
   app_port             = 3000
 }
+*/
