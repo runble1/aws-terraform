@@ -16,17 +16,17 @@
       "linuxParameters": {
         "initProcessEnabled": true
       },
-      "image": "{{ or (env `IMAGE_URL` ``) (tfstate `module.ecs2.aws_ssm_parameter.image_url.value`) }}",
+      "image": "{{ or (env `IMAGE_URL` ``) (tfstate `module.ecs.aws_ssm_parameter.image_url.value`) }}",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/nextjs",
+          "awslogs-group": "/ecs/nextjs-ecs",
           "awslogs-region": "ap-northeast-1",
           "awslogs-stream-prefix": "ecs"
         }
       },
       "memory": 512,
-      "name": "nextjs-container",
+      "name": "nextjs-ecs-container",
       "portMappings": [
         {
           "appProtocol": "",
@@ -38,8 +38,8 @@
     }
   ],
   "cpu": "256",
-  "taskRoleArn": "{{ or (env `TASK_ROLE_ARN` ``) (tfstate `module.ecs2.aws_iam_role.ecs_task_role.arn`) }}",
-  "executionRoleArn": "{{ or (env `EXECUTION_ROLE_ARN` ``) (tfstate `module.ecs2.aws_iam_role.ecs_task_execution_role.arn`) }}",
+  "taskRoleArn": "{{ or (env `TASK_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_role.arn`) }}",
+  "executionRoleArn": "{{ or (env `EXECUTION_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_execution_role.arn`) }}",
   "family": "nextjs-task-definition",
   "ipcMode": "",
   "memory": "512",

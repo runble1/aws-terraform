@@ -40,7 +40,7 @@ terraform apply --target=module.ssm
 
 ### 5 ECS
 ```
-terraform apply --target=module.ecs2
+terraform apply --target=module.ecs
 ```
 
 ### 6 ローカルからecspressoでデプロイ
