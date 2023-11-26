@@ -20,13 +20,13 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/nextjs-ecs",
+          "awslogs-group": "/ecs/{{ env `SERVICE_NAME`}}",
           "awslogs-region": "ap-northeast-1",
           "awslogs-stream-prefix": "ecs"
         }
       },
       "memory": 512,
-      "name": "nextjs-ecs-container",
+      "name": "{{ env `SERVICE_NAME`}}-container",
       "portMappings": [
         {
           "appProtocol": "",
@@ -40,7 +40,7 @@
   "cpu": "256",
   "taskRoleArn": "{{ or (env `TASK_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_role.arn`) }}",
   "executionRoleArn": "{{ or (env `EXECUTION_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_execution_role.arn`) }}",
-  "family": "nextjs-task-definition",
+  "family": "{{ env `SERVICE_NAME`}}-task-definition",
   "ipcMode": "",
   "memory": "512",
   "networkMode": "awsvpc",

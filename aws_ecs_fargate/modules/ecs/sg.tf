@@ -2,8 +2,8 @@
 # ALB -> ECS
 ####################################################
 resource "aws_security_group" "ecs" {
-  name        = "${var.env}-${var.service}-ecs-sg"
-  description = "${var.env}-${var.service}-ecs-sg"
+  name        = "${var.service}-ecs-sg"
+  description = "${var.service}-ecs-sg"
   vpc_id      = var.vpc_id
 
   egress {
@@ -14,7 +14,7 @@ resource "aws_security_group" "ecs" {
   }
 
   tags = {
-    Name = "${var.env}-${var.service}-ecs-sg"
+    Name = "${var.service}-ecs-sg"
   }
 }
 
@@ -24,8 +24,8 @@ resource "aws_security_group_rule" "ecs_from_alb" {
   to_port   = var.app_port
   protocol  = "tcp"
 
-  cidr_blocks = ["0.0.0.0/0"]
-  #source_security_group_id = var.alb_sg_id
+  #cidr_blocks = ["0.0.0.0/0"]
+  source_security_group_id = var.alb_sg_id
 
   security_group_id = aws_security_group.ecs.id
 }

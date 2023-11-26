@@ -29,16 +29,13 @@ module "alb" {
 
 module "cloudwatch" {
   source  = "../../modules/cloudwatch"
-  service = local.service
+  service = "${var.env}-${local.service}"
 }
 
 module "ecs" {
   source               = "../../modules/ecs"
-  env                  = var.env
-  service              = local.service
+  service              = "${var.env}-${local.service}"
   vpc_id               = module.network.vpc_id
-  subnet_private_1a_id = module.network.subnet_private_1a_id
-  subnet_private_1c_id = module.network.subnet_private_1c_id
   alb_target_group_arn = module.alb.target_group_arn
   alb_sg_id            = module.alb.alb_sg_id
   app_port             = 3000
@@ -47,8 +44,7 @@ module "ecs" {
 
 module "ecspresso" {
   source                      = "../../modules/ecspresso"
-  env                         = var.env
-  service                     = local.service
+  service                     = "${var.env}-${local.service}"
   vpc_id                      = module.network.vpc_id
   subnet_private_1a_id        = module.network.subnet_private_1a_id
   subnet_private_1c_id        = module.network.subnet_private_1c_id

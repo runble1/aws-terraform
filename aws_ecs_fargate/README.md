@@ -46,6 +46,8 @@ terraform apply --target=module.ecs
 ### 6 ローカルからecspressoでデプロイ
 デプロイ
 ```
+terraform apply --target=module.ecspresso
+or
 ecspresso deploy --config ecspresso.yml
 ```
 リスト確認
@@ -60,7 +62,7 @@ terraform state list
 ## ECS Exec
 ```
 aws ecs execute-command  \
-    --cluster nextjs-cluster \
+    --cluster nextjs-ecs-cluster \
     --task <TASK_ID> \
     --container nextjs-container \
     --interactive \

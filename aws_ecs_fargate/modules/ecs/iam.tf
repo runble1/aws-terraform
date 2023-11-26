@@ -25,14 +25,33 @@ resource "aws_iam_role_policy_attachment" "ecs_container_registry_read_only" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# ※cloudwatchログ送付の検証用
-resource "aws_iam_role_policy_attachment" "admin" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+resource "aws_iam_policy" "ecs_cloudwatch_logs_policy" {
+  name        = "${var.service}-ecs-cloudwatch-logs-policy"
+  description = "Allow ECS tasks to write logs to CloudWatch"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:CreateLogGroup"
+      ],
+      "Resource": [
+        "arn:aws:logs:*:*:log-group:/ecs/${var.service}:*"
+      ]
+    }
+  ]
 }
-resource "aws_iam_role_policy_attachment" "admin2" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_cloudwatch_logs_policy_attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecs_cloudwatch_logs_policy.arn
 }
 
 # タスクロール

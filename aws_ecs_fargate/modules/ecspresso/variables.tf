@@ -1,4 +1,3 @@
-variable "env" {}
 variable "service" {}
 
 variable "vpc_id" {}

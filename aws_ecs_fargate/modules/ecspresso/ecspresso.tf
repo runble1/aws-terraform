@@ -16,6 +16,8 @@ resource "null_resource" "ecspresso" {
       SUBNET_1C_ID       = var.subnet_private_1c_id,
       TARGET_GROUP_ARN   = var.alb_target_group_arn,
       IMAGE_URL          = var.ecs_image_url
+      APP_PORT           = var.app_port
+      SERVICE_NAME       = var.service
     }
   }
 

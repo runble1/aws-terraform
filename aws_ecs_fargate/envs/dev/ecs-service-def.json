@@ -17,7 +17,7 @@
   "launchType": "FARGATE",
   "loadBalancers": [
     {
-      "containerName": "nextjs-ecs-container",
+      "containerName": "{{ env `SERVICE_NAME`}}-container",
       "containerPort": 3000,
       "targetGroupArn": "{{ or (env `TARGET_GROUP_ARN` ``) (tfstate `module.alb.aws_lb_target_group.for_webserver.arn`) }}"
     }
