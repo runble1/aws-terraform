@@ -92,3 +92,8 @@ trivy image --ignore-unfixed nextjs-app:latest
 ```
 trivy fs ./
 ```
+
+#### IoC Scanning
+```
+trivy config .
+```
