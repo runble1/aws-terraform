@@ -13,9 +13,8 @@ on:
       - aws_ecs_fargate/**
   workflow_dispatch:
 
-
 env:
-  WORKING_DIR: aws_ecs_fargate/envs/dev
+  WORKING_DIR: aws_ecs_fargate/
 
 permissions:
   contents: read
@@ -30,7 +29,7 @@ concurrency:
 
 jobs:
   trivy:
-    if: ${{ !contains(github.event.head_commit.message, '[skip security]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip trivy]') }}
     runs-on: "ubuntu-20.04"
     defaults:
       run:
