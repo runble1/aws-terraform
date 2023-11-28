@@ -8,7 +8,6 @@ module "ecr" {
   holding_count = 5
 }
 
-
 module "network" {
   source  = "../../modules/network"
   env     = var.env
@@ -26,7 +25,6 @@ module "alb" {
   app_port            = 3000
 }
 
-
 module "cloudwatch" {
   source  = "../../modules/cloudwatch"
   service = "${var.env}-${local.service}"
@@ -43,6 +41,7 @@ module "ecs" {
 }
 
 module "ecspresso" {
+  depends_on                  = [module.ecs]
   source                      = "../../modules/ecspresso"
   service                     = "${var.env}-${local.service}"
   vpc_id                      = module.network.vpc_id
