@@ -15,7 +15,8 @@ resource "null_resource" "ecspresso" {
       SUBNET_1A_ID       = var.subnet_private_1a_id,
       SUBNET_1C_ID       = var.subnet_private_1c_id,
       TARGET_GROUP_ARN   = var.alb_target_group_arn,
-      IMAGE_URL          = var.ecs_image_url
+      APP_IMAGE_URL      = var.app_image_url
+      FIRELENS_IMAGE_URL = var.firelens_image_url
       APP_PORT           = var.app_port
       SERVICE_NAME       = "${var.service}"
       ECS_SERVICE_NAME   = "${var.service}-service"

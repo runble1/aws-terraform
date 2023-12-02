@@ -38,7 +38,8 @@ resource "aws_iam_role_policy" "firehose_policy" {
           "s3:GetObject",
           "s3:ListBucket",
           "s3:ListBucketMultipartUploads",
-          "s3:PutObject"
+          "s3:PutObject",
+          "s3:*"
         ],
         Effect = "Allow",
         Resource = [

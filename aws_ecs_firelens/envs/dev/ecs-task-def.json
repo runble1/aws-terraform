@@ -17,7 +17,7 @@
       "linuxParameters": {
         "initProcessEnabled": true
       },
-      "image": "{{ or (env `IMAGE_URL` ``) (tfstate `module.ecs.aws_ssm_parameter.image_url.value`) }}",
+      "image": "{{ env `APP_IMAGE_URL` `` }}",
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
@@ -38,7 +38,7 @@
     },
     {
       "essential": true,
-      "image": "404307571516.dkr.ecr.ap-northeast-1.amazonaws.com/nextjs-ecs-firelens:latest",
+      "image":  "{{ env `FIRELENS_IMAGE_URL` ``}}",
       "name": "firelens-container",
       "firelensConfiguration": {
         "type": "fluentbit"

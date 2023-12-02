@@ -11,7 +11,8 @@ variable "cluster_name" {}
 variable "ecs_task_execution_role_arn" {}
 variable "ecs_task_role_arn" {}
 variable "ecs_sg_id" {}
-variable "ecs_image_url" {}
+variable "app_image_url" {}
+variable "firelens_image_url" {}
 variable "kinesis_firehose_name" {}
 
 data "aws_caller_identity" "self" {}

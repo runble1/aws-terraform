@@ -108,3 +108,33 @@ resource "aws_iam_role_policy_attachment" "ecs_exec_additional_policy_attachment
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.ecs_exec_additional_policy.arn
 }
+
+resource "aws_iam_role_policy_attachment" "ecs_firehose_access_policy" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess"
+}
+
+/*
+resource "aws_iam_policy" "ecs_firehose_access_policy" {
+  name        = "${var.service}-ecs-firehose-access-policy"
+  description = "Allow ECS tasks to write to Kinesis Firehose"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "firehose:PutRecordBatch",
+      "Resource": "arn:aws:firehose:ap-northeast-1:404307571516:deliverystream/${aws_kinesis_firehose_delivery_stream.this.name}"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_firehose_access_policy_attachment" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_firehose_access_policy.arn
+}
+*/
