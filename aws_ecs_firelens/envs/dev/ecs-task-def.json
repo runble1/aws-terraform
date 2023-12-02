@@ -1,0 +1,65 @@
+{
+  "containerDefinitions": [
+    {
+      "cpu": 256,
+      "memory": 512,
+      "essential": true,
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "wget -q -O - http://localhost:3000/api/healthcheck || exit 1"
+        ],
+        "interval": 5,
+        "retries": 3,
+        "startPeriod": 60,
+        "timeout": 5
+      },
+      "linuxParameters": {
+        "initProcessEnabled": true
+      },
+      "image": "{{ or (env `IMAGE_URL` ``) (tfstate `module.ecs.aws_ssm_parameter.image_url.value`) }}",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/{{ env `SERVICE_NAME`}}",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "name": "{{ env `SERVICE_NAME`}}-container",
+      "portMappings": [
+        {
+          "appProtocol": "",
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "taskRoleArn": "{{ or (env `TASK_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_role.arn`) }}",
+  "executionRoleArn": "{{ or (env `EXECUTION_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_execution_role.arn`) }}",
+  "family": "{{ env `SERVICE_NAME`}}-task-definition",
+  "ipcMode": "",
+  "networkMode": "awsvpc",
+  "pidMode": "",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "tags": [
+    {
+      "key": "Env",
+      "value": "dev"
+    },
+    {
+      "key": "System",
+      "value": "nextjs"
+    }
+  ]
+}
