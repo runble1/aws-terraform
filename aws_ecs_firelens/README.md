@@ -19,8 +19,8 @@ ECRへイメージプッシュ
 #### Firelens
 ```
 docker pull public.ecr.aws/aws-observability/aws-for-fluent-bit:latest
-docker tag public.ecr.aws/aws-observability/aws-for-fluent-bit:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/nextjs-ecs-firelens
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/nextjs-ecs-firelens:latest
+docker tag public.ecr.aws/aws-observability/aws-for-fluent-bit:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest
 ```
 
 ### 2 Network
