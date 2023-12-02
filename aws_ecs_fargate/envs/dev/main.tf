@@ -37,7 +37,9 @@ module "ecs" {
   alb_target_group_arn = module.alb.target_group_arn
   alb_sg_id            = module.alb.alb_sg_id
   app_port             = 3000
-  tag                  = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${local.service}:7b6788d4227fb911efd9c015a5005bf39f727d5d"
+  image_url            = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${local.service}:"
+  image_tag            = "b88ebd6451a6dc43fbe171dc8fcf9d0b4d74e9a1"
+
 }
 
 module "ecspresso" {

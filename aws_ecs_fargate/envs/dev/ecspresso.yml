@@ -1,6 +1,8 @@
 region: ap-northeast-1  # AWSリージョン
-cluster: {{ env `SERVICE_NAME`}}-cluster  # ECSクラスター名
-service: {{ env `SERVICE_NAME`}}-service  # ECSサービス名
+#cluster: {{ (env `CLUSTER_NAME` ``) }} # ECSクラスター名
+#service: {{ (env `SERVICE_NAME` ``) }}  # ECSサービス名
+cluster: dev-nextjs-ecs-cluster
+service: dev-nextjs-ecs-service
 service_definition: ecs-service-def.json
 task_definition: ecs-task-def.json
 timeout: "10m0s"

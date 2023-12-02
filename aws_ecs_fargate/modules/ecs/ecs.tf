@@ -25,12 +25,12 @@ resource "aws_ecs_cluster" "cluster" {
 resource "aws_ecs_cluster_capacity_providers" "cluster_capacity_providers" {
   cluster_name = aws_ecs_cluster.cluster.name
 
-  capacity_providers = ["FARGATE"]
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 
   default_capacity_provider_strategy {
-    base              = 1
-    weight            = 100
-    capacity_provider = "FARGATE"
+    base              = 0
+    weight            = 1
+    capacity_provider = "FARGATE_SPOT"
   }
 }
 

@@ -18,6 +18,12 @@ resource "github_repository" "example" {
   delete_branch_on_merge = true
 
   topics = ["dependabot"]
+
+  #security_and_analysis {
+  #  advanced_security {
+  #    status = "enabled"
+  #  }
+  #}
 }
 
 # dependabot 自動セキュリティ修正
