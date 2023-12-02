@@ -1,12 +1,18 @@
 # Github でセキュリティ基盤
 
 ## preparation
+tfstate を S3 においているため
 ```
-gh auth login --scopes project
+aws-vault exec test
+```
+
+## 認証
+```
+gh auth login --scopes gist, project, read:org, repo, workflow
 gh auth status
 ```
 
-## Usage
+## デプロイ
 ```
 GITHUB_TOKEN=$(gh auth token) terraform apply
 ```

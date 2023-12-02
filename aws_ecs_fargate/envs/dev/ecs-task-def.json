@@ -2,6 +2,7 @@
   "containerDefinitions": [
     {
       "cpu": 256,
+      "memory": 512,
       "essential": true,
       "healthCheck": {
         "command": [
@@ -25,7 +26,6 @@
           "awslogs-stream-prefix": "ecs"
         }
       },
-      "memory": 512,
       "name": "{{ env `SERVICE_NAME`}}-container",
       "portMappings": [
         {
@@ -38,11 +38,11 @@
     }
   ],
   "cpu": "256",
+  "memory": "512",
   "taskRoleArn": "{{ or (env `TASK_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_role.arn`) }}",
   "executionRoleArn": "{{ or (env `EXECUTION_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_execution_role.arn`) }}",
   "family": "{{ env `SERVICE_NAME`}}-task-definition",
   "ipcMode": "",
-  "memory": "512",
   "networkMode": "awsvpc",
   "pidMode": "",
   "requiresCompatibilities": [

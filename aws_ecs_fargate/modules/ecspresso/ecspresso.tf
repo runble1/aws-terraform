@@ -17,7 +17,11 @@ resource "null_resource" "ecspresso" {
       TARGET_GROUP_ARN   = var.alb_target_group_arn,
       IMAGE_URL          = var.ecs_image_url
       APP_PORT           = var.app_port
-      SERVICE_NAME       = var.service
+      SERVICE_NAME       = "${var.service}"
+      ECS_SERVICE_NAME   = "${var.service}-service"
+      #SERVICE_NAME = "dev-nextjs-ecs-service"
+      #CLUSTER_NAME = var.cluster_name
+      CLUSTER_NAME = "dev-nextjs-ecs-cluster"
     }
   }
 
