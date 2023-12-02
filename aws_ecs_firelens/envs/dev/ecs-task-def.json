@@ -1,8 +1,8 @@
 {
   "containerDefinitions": [
     {
-      "cpu": 256,
-      "memory": 512,
+      "cpu": 512,
+      "memory": 1024,
       "essential": true,
       "healthCheck": {
         "command": [
@@ -19,11 +19,11 @@
       },
       "image": "{{ or (env `IMAGE_URL` ``) (tfstate `module.ecs.aws_ssm_parameter.image_url.value`) }}",
       "logConfiguration": {
-        "logDriver": "awslogs",
+        "logDriver": "awsfirelens",
         "options": {
-          "awslogs-group": "/ecs/{{ env `SERVICE_NAME`}}",
-          "awslogs-region": "ap-northeast-1",
-          "awslogs-stream-prefix": "ecs"
+          "Name": "firehose",
+          "region": "ap-northeast-1",
+          "delivery_stream": "{{ env `KINESIS_FIREHOSE_NAME` ``}}"
         }
       },
       "name": "{{ env `SERVICE_NAME`}}-container",
@@ -35,10 +35,27 @@
           "protocol": "tcp"
         }
       ]
+    },
+    {
+      "essential": true,
+      "image": "404307571516.dkr.ecr.ap-northeast-1.amazonaws.com/nextjs-ecs-firelens:latest",
+      "name": "firelens-container",
+      "firelensConfiguration": {
+        "type": "fluentbit"
+      },
+      "memoryReservation": 50,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/firelens-logs",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "firelens"
+        }
+      }
     }
   ],
-  "cpu": "256",
-  "memory": "512",
+  "cpu": "512",
+  "memory": "1024",
   "taskRoleArn": "{{ or (env `TASK_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_role.arn`) }}",
   "executionRoleArn": "{{ or (env `EXECUTION_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_execution_role.arn`) }}",
   "family": "{{ env `SERVICE_NAME`}}-task-definition",

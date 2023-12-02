@@ -21,7 +21,8 @@ resource "null_resource" "ecspresso" {
       ECS_SERVICE_NAME   = "${var.service}-service"
       #SERVICE_NAME = "dev-nextjs-ecs-service"
       #CLUSTER_NAME = var.cluster_name
-      CLUSTER_NAME = "dev-nextjs-ecs-cluster"
+      CLUSTER_NAME          = "dev-nextjs-ecs-cluster"
+      KINESIS_FIREHOSE_NAME = var.kinesis_firehose_name
     }
   }
 

@@ -17,3 +17,7 @@ output "ecs_sg_id" {
 output "ecs_image_url" {
   value = aws_ssm_parameter.image_url.value
 }
+
+output "kinesis_firehose_name" {
+  value = aws_kinesis_firehose_delivery_stream.this.name
+}

@@ -37,9 +37,8 @@ module "ecs" {
   alb_target_group_arn = module.alb.target_group_arn
   alb_sg_id            = module.alb.alb_sg_id
   app_port             = 3000
-  image_url            = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${local.service}:"
-  image_tag            = "b88ebd6451a6dc43fbe171dc8fcf9d0b4d74e9a1"
-
+  image_url            = module.ecr.app_repository_url
+  image_tag            = "e23ffbdde1e0d3132d0dfc727ec804278834f01b"
 }
 
 module "ecspresso" {
@@ -57,4 +56,5 @@ module "ecspresso" {
   ecs_task_role_arn           = module.ecs.ecs_task_role_arn
   ecs_sg_id                   = module.ecs.ecs_sg_id
   ecs_image_url               = module.ecs.ecs_image_url
+  kinesis_firehose_name       = module.ecs.kinesis_firehose_name
 }
