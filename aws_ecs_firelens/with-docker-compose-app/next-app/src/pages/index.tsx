@@ -3,6 +3,8 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
+  // テスト
+  console.error('Error: トップページへのアクセス時にエラーが発生しました。');
   return (
     <div className={styles.container}>
       <Head>

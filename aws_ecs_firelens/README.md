@@ -7,20 +7,15 @@ docker compose up
 docker compose run --rm terraform init
 ```
 
-### 1. コンテナレジストリとコードリポジトリ作成
-```
-terraform apply -target=module.ecr
-```
-
-### 1.5 
-#### アプリ
+### 1
 ECRへイメージプッシュ
-
-#### Firelens
+1. アプリ
 ```
-docker pull public.ecr.aws/aws-observability/aws-for-fluent-bit:latest
-docker tag public.ecr.aws/aws-observability/aws-for-fluent-bit:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest
+cd with-docker-compose-app
+```
+2. Firelens
+```
+cd firelens
 ```
 
 ### 2 Network
@@ -61,14 +56,25 @@ terraform state show
 - アプリが更新された場合（Github Actions）
 
 ## 90 ECS Exec
+Next.js
 ```
 aws ecs execute-command  \
-    --cluster nextjs-ecs-cluster \
-    --task <TASK_ID> \
-    --container nextjs-container \
+    --cluster dev-nextjs-ecs-cluster \
+    --task f9341196caa149f9ab9373469c9eddd0 \
+    --container dev-nextjs-ecs-container \
     --interactive \
     --command "/bin/sh"
 ```
+Firelens
+```
+aws ecs execute-command  \
+    --cluster dev-nextjs-ecs-cluster \
+    --task f9341196caa149f9ab9373469c9eddd0 \
+    --container firelens-container \
+    --interactive \
+    --command "/bin/sh"
+```
+
 
 ## 99 Destroy
 ECRのimageを削除

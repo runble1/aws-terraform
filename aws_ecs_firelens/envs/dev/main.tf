@@ -33,7 +33,7 @@ module "ecs" {
   app_port             = 3000
   # 下記はコンテナデプロイ時に更新したい？
   image_url = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${local.service}"
-  image_tag = "c0db37975c719a1bbdf62d0145c861ef1d355ffc"
+  image_tag = "9062c3be092426cc9701d2b55bc6b9481c9da1e4"
 }
 
 module "ecspresso" {
@@ -52,6 +52,5 @@ module "ecspresso" {
   ecs_sg_id                   = module.ecs.ecs_sg_id
   app_image_url               = module.ecs.ecs_image_url
   firelens_image_url          = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest"
-
-  kinesis_firehose_name = module.ecs.kinesis_firehose_name
+  kinesis_firehose_name       = module.ecs.kinesis_firehose_name
 }
