@@ -2,7 +2,7 @@
 # ALB
 # ====================
 resource "aws_lb" "for_webserver" {
-  name               = "${var.env}-${var.service}-alb"
+  name               = "${var.service}-alb"
   internal           = false
   load_balancer_type = "application"
 
@@ -24,7 +24,7 @@ resource "aws_lb" "for_webserver" {
   }
 
   tags = {
-    Name = "${var.env}-${var.service}-ig"
+    Name = "${var.service}-ig"
   }
 }
 
@@ -32,7 +32,7 @@ resource "aws_lb" "for_webserver" {
 # Target Group
 # ====================
 resource "aws_lb_target_group" "for_webserver" {
-  name   = "${var.env}-${var.service}-tg"
+  name   = "${var.service}-tg"
   vpc_id = var.vpc_id
 
   port        = var.app_port
@@ -49,7 +49,7 @@ resource "aws_lb_target_group" "for_webserver" {
   }
 
   tags = {
-    Name = "${var.env}-${var.service}-tg"
+    Name = "${var.service}-tg"
   }
 }
 
@@ -75,7 +75,7 @@ resource "aws_lb_listener" "http" {
 # Security Group
 # ====================
 resource "aws_security_group" "alb" {
-  name   = "${var.env}-${var.service}-alb-sg"
+  name   = "${var.service}-alb-sg"
   vpc_id = var.vpc_id
 
   egress {
@@ -86,7 +86,7 @@ resource "aws_security_group" "alb" {
   }
 
   tags = {
-    Name = "${var.env}-${var.service}-alb-sg"
+    Name = "${var.service}-alb-sg"
   }
 }
 
@@ -103,7 +103,7 @@ resource "aws_security_group_rule" "alb_http" {
 # Log
 # ====================
 resource "aws_s3_bucket" "alb_logs" {
-  bucket = "${var.env}-${var.service}-alb-logs"
+  bucket = "${var.service}-alb-logs"
 
   force_destroy = true
 }

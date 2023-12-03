@@ -1,6 +1,3 @@
-# 
-# Flow Logs
-#
 resource "aws_flow_log" "vpc_flow_log" {
   log_destination      = aws_s3_bucket.flow_log_bucket.arn
   log_destination_type = "s3"
@@ -12,6 +9,6 @@ resource "aws_flow_log" "vpc_flow_log" {
 # S3
 # 
 resource "aws_s3_bucket" "flow_log_bucket" {
-  bucket        = "${var.env}-${var.service}-flow-log-bucket"
+  bucket        = "${var.service}-flow-log-bucket"
   force_destroy = true
 }

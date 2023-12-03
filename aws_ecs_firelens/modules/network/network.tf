@@ -7,7 +7,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name = "${var.env}-${var.service}-vpc"
+    Name = "${var.service}-vpc"
   }
 }
 
@@ -19,7 +19,7 @@ resource "aws_subnet" "public_1a" {
   cidr_block        = "10.0.1.0/24"
   availability_zone = "ap-northeast-1a"
   tags = {
-    Name = "${var.env}-${var.service}-public-1a"
+    Name = "${var.service}-public-1a"
   }
 }
 
@@ -28,7 +28,7 @@ resource "aws_subnet" "public_1c" {
   cidr_block        = "10.0.2.0/24"
   availability_zone = "ap-northeast-1c"
   tags = {
-    Name = "${var.env}-${var.service}-public-1c"
+    Name = "${var.service}-public-1c"
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "private_1a" {
   availability_zone       = "ap-northeast-1a"
   map_public_ip_on_launch = false
   tags = {
-    Name = "${var.env}-${var.service}-private-1a"
+    Name = "${var.service}-private-1a"
   }
 }
 
@@ -48,7 +48,7 @@ resource "aws_subnet" "private_1c" {
   availability_zone       = "ap-northeast-1c"
   map_public_ip_on_launch = false
   tags = {
-    Name = "${var.env}-${var.service}-private-1c"
+    Name = "${var.service}-private-1c"
   }
 }
 
@@ -58,7 +58,7 @@ resource "aws_subnet" "private_1c" {
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "${var.env}-${var.service}-ig"
+    Name = "${var.service}-ig"
   }
 }
 
@@ -68,7 +68,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 resource "aws_route_table" "public_1a" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "${var.env}-${var.service}-public-1a"
+    Name = "${var.service}-public-1a"
   }
 }
 
@@ -86,7 +86,7 @@ resource "aws_route_table_association" "public_1a" {
 resource "aws_route_table" "public_1c" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "${var.env}-${var.service}-public-1c"
+    Name = "${var.service}-public-1c"
   }
 }
 
@@ -108,7 +108,7 @@ resource "aws_route_table_association" "public_1c" {
 resource "aws_route_table" "private_1a" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "${var.env}-${var.service}-private-1a"
+    Name = "${var.service}-private-1a"
   }
 }
 
@@ -120,7 +120,7 @@ resource "aws_route_table_association" "private_1a" {
 resource "aws_route_table" "private_1c" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "${var.env}-${var.service}-private-1c"
+    Name = "${var.service}-private-1c"
   }
 }
 

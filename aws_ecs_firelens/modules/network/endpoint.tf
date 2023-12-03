@@ -12,18 +12,18 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-s3endpoint"
+    Environment = "${var.service}-s3endpoint"
   }
 }
 
 # イメージ保管用のS3バケット
 resource "aws_s3_bucket" "default" {
-  bucket = "${var.env}-${var.service}-${data.aws_caller_identity.self.account_id}"
+  bucket = "${var.service}-${data.aws_caller_identity.self.account_id}"
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "default" {
   rule {
-    id     = "${var.env}-${var.service}-lifecycle-rule"
+    id     = "${var.service}-lifecycle-rule"
     status = "Enabled"
 
     transition {
@@ -59,7 +59,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-ecr.api.endpoint"
+    Environment = "${var.service}-ecr.api.endpoint"
   }
 }
 
@@ -82,7 +82,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-ecr.dkr.endpoint"
+    Environment = "${var.service}-ecr.dkr.endpoint"
   }
 }
 
@@ -100,7 +100,7 @@ resource "aws_vpc_endpoint" "logs" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-logs.endpoint"
+    Environment = "${var.service}-logs.endpoint"
   }
 }
 
@@ -128,7 +128,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-secretsmanager.endpoint"
+    Environment = "${var.service}-secretsmanager.endpoint"
   }
 }
 
@@ -156,7 +156,7 @@ resource "aws_vpc_endpoint" "ssm" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-ssm.endpoint"
+    Environment = "${var.service}-ssm.endpoint"
   }
 }
 
@@ -184,7 +184,7 @@ resource "aws_vpc_endpoint" "kinesis" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-kinesis.endpoint"
+    Environment = "${var.service}-kinesis.endpoint"
   }
 }
 
@@ -221,6 +221,6 @@ resource "aws_security_group" "vpc_endpoint" {
   }
 
   tags = {
-    Name = "${var.env}-${var.service}-vpc-endpoint-sg"
+    Name = "${var.service}-vpc-endpoint-sg"
   }
 }
