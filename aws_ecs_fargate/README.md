@@ -55,18 +55,23 @@ terraform state show
 ## 90 ECS Exec
 ```
 aws ecs execute-command  \
-    --cluster nextjs-ecs-cluster \
-    --task <TASK_ID> \
-    --container nextjs-container \
+    --debug \
+    --cluster dev-nextjs-ecs-cluster \
+    --task cf57aca33cde4697a54ad8a7c0d17e6c \
+    --container dev-nextjs-ecs-container \
     --interactive \
     --command "/bin/sh"
 ```
+デバッグ
+```
+aws ecs describe-tasks --cluster dev-nextjs-ecs-cluster --tasks cf57aca33cde4697a54ad8a7c0d17e6c| grep enableExecuteCommand
+
+```
 
 ## 99 Destroy
-ECRのimageを削除
-ECS Serviceを削除
+```
 terraform destroy
-
+```
 
 ## Security Check
 ### Trivy
