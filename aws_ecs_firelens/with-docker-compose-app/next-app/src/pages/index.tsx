@@ -4,6 +4,8 @@ import styles from '../styles/Home.module.css'
 
 export default function Home() {
   // テスト
+  console.log("test");
+  console.log("Error");
   console.error('Error: トップページへのアクセス時にエラーが発生しました。');
   return (
     <div className={styles.container}>

@@ -15,17 +15,23 @@ resource "aws_kms_key" "this" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "ecs.amazonaws.com"
+          Service = ["ecs.amazonaws.com", "logs.amazonaws.com"]
         }
         Action = [
           "kms:Encrypt",
           "kms:Decrypt",
           "kms:ReEncrypt*",
           "kms:GenerateDataKey*",
-          "kms:DescribeKey"
+          "kms:DescribeKey",
         ]
         Resource = "*"
       }
     ]
   })
+}
+
+# KMS Keyのエイリアスの作成（オプション）
+resource "aws_kms_alias" "ecs_exec_command_key_alias" {
+  name          = "alias/${var.service}-ecs-exec-command-key"
+  target_key_id = aws_kms_key.this.key_id
 }

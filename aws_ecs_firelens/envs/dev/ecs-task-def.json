@@ -1,6 +1,7 @@
 {
   "containerDefinitions": [
     {
+      "name": "{{ env `SERVICE_NAME`}}-container",
       "cpu": 512,
       "memory": 1024,
       "essential": true,
@@ -26,7 +27,6 @@
           "delivery_stream": "{{ env `KINESIS_FIREHOSE_NAME` ``}}"
         }
       },
-      "name": "{{ env `SERVICE_NAME`}}-container",
       "portMappings": [
         {
           "appProtocol": "",
@@ -37,9 +37,9 @@
       ]
     },
     {
+      "name": "firelens-container",
       "essential": true,
       "image":  "{{ env `FIRELENS_IMAGE_URL` ``}}",
-      "name": "firelens-container",
       "firelensConfiguration": {
         "type": "fluentbit"
       },

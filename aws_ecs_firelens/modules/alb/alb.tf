@@ -70,31 +70,3 @@ resource "aws_lb_listener" "http" {
     create_before_destroy = true
   }
 }
-
-# ====================
-# Security Group
-# ====================
-resource "aws_security_group" "alb" {
-  name   = "${var.service}-alb-sg"
-  vpc_id = var.vpc_id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.service}-alb-sg"
-  }
-}
-
-resource "aws_security_group_rule" "alb_http" {
-  from_port         = var.lb_port
-  to_port           = var.lb_port
-  protocol          = "tcp"
-  security_group_id = aws_security_group.alb.id
-  type              = "ingress"
-  cidr_blocks       = ["0.0.0.0/0"]
-}

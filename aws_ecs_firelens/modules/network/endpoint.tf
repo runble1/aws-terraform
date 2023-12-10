@@ -202,6 +202,39 @@ resource "aws_vpc_endpoint_subnet_association" "skinesis_private_1c" {
   subnet_id       = aws_subnet.private_1c.id
 }
 
+########
+# KMS (Key Management Service)
+########
+resource "aws_vpc_endpoint" "kms" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.ap-northeast-1.kms"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  subnet_ids = [
+    aws_subnet.private_1a.id,
+    aws_subnet.private_1c.id
+  ]
+
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+
+  tags = {
+    Environment = "${var.service}-kms.endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint_subnet_association" "kms_private_1a" {
+  vpc_endpoint_id = aws_vpc_endpoint.kms.id
+  subnet_id       = aws_subnet.private_1a.id
+}
+
+resource "aws_vpc_endpoint_subnet_association" "kms_private_1c" {
+  vpc_endpoint_id = aws_vpc_endpoint.kms.id
+  subnet_id       = aws_subnet.private_1c.id
+}
+
 
 #########################
 # security group

@@ -1,19 +1,16 @@
 # ECS + Fargate
 
-## Deploy
+## Prepare 
 ```
 aws-vault exec test
-docker compose up
-docker compose run --rm terraform init
 ```
 
 ### 1
-ECRへイメージプッシュ
-1. アプリ
+* アプリ
 ```
 cd with-docker-compose-app
 ```
-2. Firelens
+* Firelens
 ```
 cd firelens
 ```
@@ -34,18 +31,18 @@ terraform apply --target=module.cloudwatch
 ```
 
 ### 5 ECS
-tagを最初だけ手打ち
 ```
 terraform apply --target=module.ecs
 ```
 
 ### 6 ecspressoでデプロイ
+* デプロイ
 ```
 terraform apply --target=module.ecspresso
 or
 ecspresso deploy --config ecspresso.yml
 ```
-※リスト確認
+* リスト確認
 ```
 terraform state list
 terraform state show 
@@ -56,34 +53,33 @@ terraform state show
 - アプリが更新された場合（Github Actions）
 
 ## 90 ECS Exec
-認証セット
+* 認証セット
 ```
 aws-vault exec test
 ```
-Next.js
+* Next.js
 ```
 aws ecs execute-command  \
-    --debug \
     --cluster dev-nextjs-ecs-cluster \
-    --task c55057716ecb4d67a18fe654beeef237 \
+    --task 0f2b03d7135f461fbc14cb39ea3b7c14 \
     --container dev-nextjs-ecs-container \
     --interactive \
     --command "/bin/sh"
 ```
-Firelens
+* Firelens
 ```
 aws ecs execute-command  \
     --cluster dev-nextjs-ecs-cluster \
-    --task c55057716ecb4d67a18fe654beeef237 \
+    --task 0f2b03d7135f461fbc14cb39ea3b7c14 \
     --container firelens-container \
     --interactive \
     --command "/bin/sh"
 ```
 
-
 ## 99 Destroy
+```
 terraform destroy
-
+```
 
 ## Security Check
 ### Trivy
