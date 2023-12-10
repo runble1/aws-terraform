@@ -16,30 +16,6 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   }
 }
 
-# イメージ保管用のS3バケット
-resource "aws_s3_bucket" "default" {
-  bucket = "${var.service}-${data.aws_caller_identity.self.account_id}"
-}
-
-resource "aws_s3_bucket_lifecycle_configuration" "default" {
-  rule {
-    id     = "${var.service}-lifecycle-rule"
-    status = "Enabled"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-
-    transition {
-      days          = 60
-      storage_class = "GLACIER"
-    }
-  }
-
-  bucket = aws_s3_bucket.default.id
-}
-
 ########
 # ecr api (aws ecr get-login-password) 
 ########
@@ -167,6 +143,34 @@ resource "aws_vpc_endpoint_subnet_association" "ssm_private_1a" {
 
 resource "aws_vpc_endpoint_subnet_association" "ssm_private_1c" {
   vpc_endpoint_id = aws_vpc_endpoint.ssm.id
+  subnet_id       = aws_subnet.private_1c.id
+}
+
+########
+# ssmmessages for ECS Exec
+########
+resource "aws_vpc_endpoint" "ssmmessages" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.ap-northeast-1.ssmmessages"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+
+  tags = {
+    Environment = "${var.service}-ssmmessages.endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint_subnet_association" "ssmmessages_private_1a" {
+  vpc_endpoint_id = aws_vpc_endpoint.ssmmessages.id
+  subnet_id       = aws_subnet.private_1a.id
+}
+
+resource "aws_vpc_endpoint_subnet_association" "ssmmessages_private_1c" {
+  vpc_endpoint_id = aws_vpc_endpoint.ssmmessages.id
   subnet_id       = aws_subnet.private_1c.id
 }
 

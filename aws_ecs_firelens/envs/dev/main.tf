@@ -19,8 +19,8 @@ module "alb" {
   app_port            = 3000
 }
 
-module "cloudwatch" {
-  source  = "../../modules/cloudwatch"
+module "log" {
+  source  = "../../modules/log"
   service = "${var.env}-${local.service}"
 }
 
@@ -50,7 +50,7 @@ module "ecspresso" {
   ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
   ecs_task_role_arn           = module.ecs.ecs_task_role_arn
   ecs_sg_id                   = module.ecs.ecs_sg_id
-  app_image_url               = module.ecs.ecs_image_url
+  app_image_url               = module.ecs.ecs_image_url #
   firelens_image_url          = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest"
-  kinesis_firehose_name       = module.ecs.kinesis_firehose_name
+  kinesis_firehose_name       = module.log.kinesis_firehose_name
 }

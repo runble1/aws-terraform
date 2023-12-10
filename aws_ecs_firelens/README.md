@@ -56,11 +56,16 @@ terraform state show
 - アプリが更新された場合（Github Actions）
 
 ## 90 ECS Exec
+認証セット
+```
+aws-vault exec test
+```
 Next.js
 ```
 aws ecs execute-command  \
+    --debug \
     --cluster dev-nextjs-ecs-cluster \
-    --task f9341196caa149f9ab9373469c9eddd0 \
+    --task c55057716ecb4d67a18fe654beeef237 \
     --container dev-nextjs-ecs-container \
     --interactive \
     --command "/bin/sh"
@@ -69,7 +74,7 @@ Firelens
 ```
 aws ecs execute-command  \
     --cluster dev-nextjs-ecs-cluster \
-    --task f9341196caa149f9ab9373469c9eddd0 \
+    --task c55057716ecb4d67a18fe654beeef237 \
     --container firelens-container \
     --interactive \
     --command "/bin/sh"
@@ -77,8 +82,6 @@ aws ecs execute-command  \
 
 
 ## 99 Destroy
-ECRのimageを削除
-ECS Serviceを削除
 terraform destroy
 
 

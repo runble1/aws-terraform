@@ -40,9 +40,7 @@ resource "aws_iam_policy" "ecs_cloudwatch_logs_policy" {
         "logs:PutLogEvents",
         "logs:CreateLogGroup"
       ],
-      "Resource": [
-        "arn:aws:logs:*:*:log-group:/ecs/${var.service}:*"
-      ]
+      "Resource": "*"
     }
   ]
 }
@@ -138,3 +136,8 @@ resource "aws_iam_role_policy_attachment" "ecs_firehose_access_policy_attachment
   policy_arn = aws_iam_policy.ecs_firehose_access_policy.arn
 }
 */
+
+resource "aws_iam_role_policy_attachment" "ecs_tas_test" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
