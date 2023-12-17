@@ -3,7 +3,7 @@ version: '3'
 services:
   next-app:
     container_name: next-app
-    image: "${REPOSITORY_URL}:${GIT_COMMIT_ID}"
+    image: "${REPOSITORY_URL}:0.0.1"
     build:
       context: ./next-app
       dockerfile: prod.Dockerfile

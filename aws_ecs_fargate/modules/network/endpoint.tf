@@ -170,6 +170,34 @@ resource "aws_vpc_endpoint_subnet_association" "ssm_private_1c" {
   subnet_id       = aws_subnet.private_1c.id
 }
 
+########
+# ssmmessages for Parameter Store
+########
+resource "aws_vpc_endpoint" "ssmmessages" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.ap-northeast-1.ssmmessages"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+
+  tags = {
+    Environment = "${var.service}-ssmmessages.endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint_subnet_association" "ssmmessages_private_1a" {
+  vpc_endpoint_id = aws_vpc_endpoint.ssmmessages.id
+  subnet_id       = aws_subnet.private_1a.id
+}
+
+resource "aws_vpc_endpoint_subnet_association" "ssmmessages_private_1c" {
+  vpc_endpoint_id = aws_vpc_endpoint.ssmmessages.id
+  subnet_id       = aws_subnet.private_1c.id
+}
+
 #########################
 # security group
 #########################

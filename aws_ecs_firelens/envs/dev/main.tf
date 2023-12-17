@@ -1,5 +1,6 @@
 locals {
-  service = "nextjs-ecs"
+  service  = "nextjs-ecs"
+  registry = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com"
 }
 
 module "network" {
@@ -10,7 +11,6 @@ module "network" {
 
 module "alb" {
   source              = "../../modules/alb"
-  env                 = var.env
   service             = "${var.env}-${local.service}"
   vpc_id              = module.network.vpc_id
   subnet_public_1a_id = module.network.subnet_public_1a_id
@@ -19,21 +19,23 @@ module "alb" {
   app_port            = 3000
 }
 
-module "cloudwatch" {
-  source  = "../../modules/cloudwatch"
+module "kms" {
+  source  = "../../modules/kms"
   service = "${var.env}-${local.service}"
 }
 
+module "log" {
+  source  = "../../modules/log"
+  service = "${var.env}-${local.service}"
+  key_arn = module.kms.key_arn
+}
+
 module "ecs" {
-  source               = "../../modules/ecs"
-  service              = "${var.env}-${local.service}"
-  vpc_id               = module.network.vpc_id
-  alb_target_group_arn = module.alb.target_group_arn
-  alb_sg_id            = module.alb.alb_sg_id
-  app_port             = 3000
-  # 下記はコンテナデプロイ時に更新したい？
-  image_url = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${local.service}"
-  image_tag = "c0db37975c719a1bbdf62d0145c861ef1d355ffc"
+  source    = "../../modules/ecs"
+  service   = "${var.env}-${local.service}"
+  key_arn   = module.kms.key_arn
+  image_url = "${local.registry}/${var.env}-${local.service}-app"
+  image_tag = "0.0.1"
 }
 
 module "ecspresso" {
@@ -45,13 +47,12 @@ module "ecspresso" {
   subnet_private_1c_id        = module.network.subnet_private_1c_id
   alb_target_group_arn        = module.alb.target_group_arn
   alb_sg_id                   = module.alb.alb_sg_id
+  ecs_sg_id                   = module.alb.ecs_sg_id
   app_port                    = 3000
   cluster_name                = module.ecs.ecs_cluster_name
   ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
   ecs_task_role_arn           = module.ecs.ecs_task_role_arn
-  ecs_sg_id                   = module.ecs.ecs_sg_id
-  app_image_url               = module.ecs.ecs_image_url
-  firelens_image_url          = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest"
-
-  kinesis_firehose_name = module.ecs.kinesis_firehose_name
+  app_image_url               = module.ecs.ecs_image_url #
+  firelens_image_url          = "${local.registry}/${var.env}-${local.service}-firelens:0.0.1"
+  kinesis_firehose_name       = module.log.kinesis_firehose_name
 }

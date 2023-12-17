@@ -1,6 +1,7 @@
 # タスク実行ロール
+# ECSサービスがタスクの実行に必要な操作を行うため
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "${var.service}-ecs-execution-role"
+  name               = "${var.service}-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -36,13 +37,12 @@ resource "aws_iam_policy" "ecs_cloudwatch_logs_policy" {
     {
       "Effect": "Allow",
       "Action": [
+        "logs:DescribeLogGroups",
         "logs:CreateLogStream",
         "logs:PutLogEvents",
         "logs:CreateLogGroup"
       ],
-      "Resource": [
-        "arn:aws:logs:*:*:log-group:/ecs/${var.service}:*"
-      ]
+      "Resource": "*"
     }
   ]
 }
@@ -55,6 +55,7 @@ resource "aws_iam_role_policy_attachment" "ecs_cloudwatch_logs_policy_attachment
 }
 
 # タスクロール
+# タスク内のアプリケーションがAWSリソースとやり取りするため
 resource "aws_iam_role" "ecs_task_role" {
   name = "${var.service}-ecs-task-role"
 
@@ -95,7 +96,8 @@ resource "aws_iam_policy" "ecs_exec_additional_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "ecs:ExecuteCommand"
+        "ecs:ExecuteCommand",
+        "ecs:DescribeTasks"
       ],
       "Resource": "*"
     }
@@ -109,32 +111,48 @@ resource "aws_iam_role_policy_attachment" "ecs_exec_additional_policy_attachment
   policy_arn = aws_iam_policy.ecs_exec_additional_policy.arn
 }
 
+resource "aws_iam_policy" "ecs_cloudwatch_logs_policy_for_task_role" {
+  name        = "${var.service}-ecs-cloudwatch-logs-policy-for-task-role"
+  description = "Allow ECS tasks to write logs to CloudWatch for task role"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:CreateLogGroup",
+        ],
+        Resource = "*"
+      },
+    ],
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_cloudwatch_logs_policy_for_task_role_attachment" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_cloudwatch_logs_policy_for_task_role.arn
+}
+
 resource "aws_iam_role_policy_attachment" "ecs_firehose_access_policy" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess"
 }
 
-/*
-resource "aws_iam_policy" "ecs_firehose_access_policy" {
-  name        = "${var.service}-ecs-firehose-access-policy"
-  description = "Allow ECS tasks to write to Kinesis Firehose"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "firehose:PutRecordBatch",
-      "Resource": "arn:aws:firehose:ap-northeast-1:404307571516:deliverystream/${aws_kinesis_firehose_delivery_stream.this.name}"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_firehose_access_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "ecs_task_s3" {
   role       = aws_iam_role.ecs_task_role.name
-  policy_arn = aws_iam_policy.ecs_firehose_access_policy.arn
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
-*/
+
+resource "aws_iam_role_policy_attachment" "ecs_task_cloudwatch" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccessV2"
+}
+
+# ToDo:あとで消す
+resource "aws_iam_role_policy_attachment" "ecs_tas_test" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}

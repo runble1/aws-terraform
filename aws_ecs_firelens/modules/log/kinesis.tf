@@ -47,8 +47,6 @@ resource "aws_iam_role_policy" "firehose_policy" {
           "${aws_s3_bucket.this.arn}/*"
         ]
       },
-      // その他の必要な権限...
     ]
   })
 }
-

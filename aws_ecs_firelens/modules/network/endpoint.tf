@@ -12,32 +12,8 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-s3endpoint"
+    Environment = "${var.service}-s3endpoint"
   }
-}
-
-# イメージ保管用のS3バケット
-resource "aws_s3_bucket" "default" {
-  bucket = "${var.env}-${var.service}-${data.aws_caller_identity.self.account_id}"
-}
-
-resource "aws_s3_bucket_lifecycle_configuration" "default" {
-  rule {
-    id     = "${var.env}-${var.service}-lifecycle-rule"
-    status = "Enabled"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-
-    transition {
-      days          = 60
-      storage_class = "GLACIER"
-    }
-  }
-
-  bucket = aws_s3_bucket.default.id
 }
 
 ########
@@ -59,7 +35,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-ecr.api.endpoint"
+    Environment = "${var.service}-ecr.api.endpoint"
   }
 }
 
@@ -82,7 +58,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-ecr.dkr.endpoint"
+    Environment = "${var.service}-ecr.dkr.endpoint"
   }
 }
 
@@ -100,7 +76,7 @@ resource "aws_vpc_endpoint" "logs" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-logs.endpoint"
+    Environment = "${var.service}-logs.endpoint"
   }
 }
 
@@ -128,7 +104,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-secretsmanager.endpoint"
+    Environment = "${var.service}-secretsmanager.endpoint"
   }
 }
 
@@ -156,7 +132,7 @@ resource "aws_vpc_endpoint" "ssm" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-ssm.endpoint"
+    Environment = "${var.service}-ssm.endpoint"
   }
 }
 
@@ -167,6 +143,34 @@ resource "aws_vpc_endpoint_subnet_association" "ssm_private_1a" {
 
 resource "aws_vpc_endpoint_subnet_association" "ssm_private_1c" {
   vpc_endpoint_id = aws_vpc_endpoint.ssm.id
+  subnet_id       = aws_subnet.private_1c.id
+}
+
+########
+# ssmmessages for ECS Exec
+########
+resource "aws_vpc_endpoint" "ssmmessages" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.ap-northeast-1.ssmmessages"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+
+  tags = {
+    Environment = "${var.service}-ssmmessages.endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint_subnet_association" "ssmmessages_private_1a" {
+  vpc_endpoint_id = aws_vpc_endpoint.ssmmessages.id
+  subnet_id       = aws_subnet.private_1a.id
+}
+
+resource "aws_vpc_endpoint_subnet_association" "ssmmessages_private_1c" {
+  vpc_endpoint_id = aws_vpc_endpoint.ssmmessages.id
   subnet_id       = aws_subnet.private_1c.id
 }
 
@@ -184,7 +188,7 @@ resource "aws_vpc_endpoint" "kinesis" {
   ]
 
   tags = {
-    Environment = "${var.env}-${var.service}-kinesis.endpoint"
+    Environment = "${var.service}-kinesis.endpoint"
   }
 }
 
@@ -198,29 +202,35 @@ resource "aws_vpc_endpoint_subnet_association" "skinesis_private_1c" {
   subnet_id       = aws_subnet.private_1c.id
 }
 
+########
+# KMS (Key Management Service)
+########
+resource "aws_vpc_endpoint" "kms" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.ap-northeast-1.kms"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
 
-#########################
-# security group
-#########################
-resource "aws_security_group" "vpc_endpoint" {
-  name   = "${var.env}-${var.service}-vpc-endpoint-sg"
-  vpc_id = aws_vpc.main.id
+  subnet_ids = [
+    aws_subnet.private_1a.id,
+    aws_subnet.private_1c.id
+  ]
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1" #念のため
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
 
   tags = {
-    Name = "${var.env}-${var.service}-vpc-endpoint-sg"
+    Environment = "${var.service}-kms.endpoint"
   }
+}
+
+resource "aws_vpc_endpoint_subnet_association" "kms_private_1a" {
+  vpc_endpoint_id = aws_vpc_endpoint.kms.id
+  subnet_id       = aws_subnet.private_1a.id
+}
+
+resource "aws_vpc_endpoint_subnet_association" "kms_private_1c" {
+  vpc_endpoint_id = aws_vpc_endpoint.kms.id
+  subnet_id       = aws_subnet.private_1c.id
 }

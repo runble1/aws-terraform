@@ -38,7 +38,7 @@ module "ecs" {
   alb_sg_id            = module.alb.alb_sg_id
   app_port             = 3000
   image_url            = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${local.service}:"
-  image_tag            = "b88ebd6451a6dc43fbe171dc8fcf9d0b4d74e9a1"
+  image_tag            = "9062c3be092426cc9701d2b55bc6b9481c9da1e4"
 
 }
 

@@ -1,26 +1,18 @@
 # ECS + Fargate
 
-## Deploy
+## Prepare 
 ```
 aws-vault exec test
-docker compose up
-docker compose run --rm terraform init
 ```
 
-### 1. コンテナレジストリとコードリポジトリ作成
+### 1
+* アプリ
 ```
-terraform apply -target=module.ecr
+cd with-docker-compose-app
 ```
-
-### 1.5 
-#### アプリ
-ECRへイメージプッシュ
-
-#### Firelens
+* Firelens
 ```
-docker pull public.ecr.aws/aws-observability/aws-for-fluent-bit:latest
-docker tag public.ecr.aws/aws-observability/aws-for-fluent-bit:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest
+cd firelens
 ```
 
 ### 2 Network
@@ -39,18 +31,18 @@ terraform apply --target=module.cloudwatch
 ```
 
 ### 5 ECS
-tagを最初だけ手打ち
 ```
 terraform apply --target=module.ecs
 ```
 
 ### 6 ecspressoでデプロイ
+* デプロイ
 ```
 terraform apply --target=module.ecspresso
 or
 ecspresso deploy --config ecspresso.yml
 ```
-※リスト確認
+* リスト確認
 ```
 terraform state list
 terraform state show 
@@ -61,29 +53,42 @@ terraform state show
 - アプリが更新された場合（Github Actions）
 
 ## 90 ECS Exec
+* 認証セット
+```
+aws-vault exec test
+```
+* Next.js
 ```
 aws ecs execute-command  \
-    --cluster nextjs-ecs-cluster \
-    --task <TASK_ID> \
-    --container nextjs-container \
+    --cluster dev-nextjs-ecs-cluster \
+    --task 0f2b03d7135f461fbc14cb39ea3b7c14 \
+    --container dev-nextjs-ecs-container \
+    --interactive \
+    --command "/bin/sh"
+```
+* Firelens
+```
+aws ecs execute-command  \
+    --cluster dev-nextjs-ecs-cluster \
+    --task 924cdaa07e3d4ec9b8371103856c8af5 \
+    --container firelens-container \
     --interactive \
     --command "/bin/sh"
 ```
 
 ## 99 Destroy
-ECRのimageを削除
-ECS Serviceを削除
+```
 terraform destroy
-
+```
 
 ## Security Check
 ### Trivy
 #### Dockerfile Scanning
-開発
+* 開発
 ```
 trivy config with-docker-compose-app/next-app/dev.Dockerfile
 ```
-prod
+* prod
 ```
 trivy config with-docker-compose-app/next-app/prod.Dockerfile
 ```

@@ -1,6 +1,3 @@
-####################################################
-# ECS Cluster
-####################################################
 resource "aws_ecs_cluster" "cluster" {
   name = "${var.service}-cluster"
 
@@ -11,12 +8,12 @@ resource "aws_ecs_cluster" "cluster" {
 
   configuration {
     execute_command_configuration {
-      kms_key_id = aws_kms_key.this.arn
+      kms_key_id = var.key_arn
       logging    = "OVERRIDE"
 
       log_configuration {
         cloud_watch_encryption_enabled = true
-        cloud_watch_log_group_name     = "/ecs/${var.service}"
+        cloud_watch_log_group_name     = "/ecs/${var.service}-execute-command"
       }
     }
   }
@@ -33,4 +30,3 @@ resource "aws_ecs_cluster_capacity_providers" "cluster_capacity_providers" {
     capacity_provider = "FARGATE_SPOT"
   }
 }
-

@@ -1,8 +1,9 @@
 {
   "containerDefinitions": [
     {
-      "cpu": 512,
-      "memory": 1024,
+      "name": "{{ env `SERVICE_NAME`}}-container",
+      "cpu": 256,
+      "memory": 640,
       "essential": true,
       "healthCheck": {
         "command": [
@@ -19,14 +20,8 @@
       },
       "image": "{{ env `APP_IMAGE_URL` `` }}",
       "logConfiguration": {
-        "logDriver": "awsfirelens",
-        "options": {
-          "Name": "firehose",
-          "region": "ap-northeast-1",
-          "delivery_stream": "{{ env `KINESIS_FIREHOSE_NAME` ``}}"
-        }
+        "logDriver": "awsfirelens"
       },
-      "name": "{{ env `SERVICE_NAME`}}-container",
       "portMappings": [
         {
           "appProtocol": "",
@@ -37,19 +32,24 @@
       ]
     },
     {
+      "name": "firelens-container",
       "essential": true,
       "image":  "{{ env `FIRELENS_IMAGE_URL` ``}}",
-      "name": "firelens-container",
-      "firelensConfiguration": {
-        "type": "fluentbit"
-      },
-      "memoryReservation": 50,
+      "cpu": 128,
+      "memory": 256,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/firelens-logs",
           "awslogs-region": "ap-northeast-1",
           "awslogs-stream-prefix": "firelens"
+        }
+      },
+      "firelensConfiguration": {
+        "type": "fluentbit",
+        "options": {
+          "config-file-type": "file",
+          "config-file-value": "/fluent-bit/etc/extra.conf"
         }
       }
     }
