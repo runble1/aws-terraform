@@ -1,12 +1,12 @@
 module "nextjs" {
   source        = "../../modules/nextjs"
-  name          = "nextjs-ecs"
+  name          = "dev-nextjs-ecs-app"
   holding_count = 1
 }
 
 module "firelens" {
   source        = "../../modules/firelens"
-  name          = "firelens"
+  name          = "dev-nextjs-ecs-firelens"
   holding_count = 1
 }
 
