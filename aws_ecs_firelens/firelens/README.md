@@ -15,12 +15,21 @@ aws ecr --region ap-northeast-1 get-login-password | docker login --username AWS
 ```
 
 ### ビルド
+* ビルド
 ```
-docker buildx build --platform linux/arm64 -t firelens .
+docker buildx build --platform linux/arm64 -t firelens:0.0.1 .
+```
+* 実行
+```
+docker run -d --name my-running-container firelens:0.0.1
+```
+* ログイン
+```
+docker exec -it my-running-container /bin/bash
 ```
 
 ### プッシュ
 ```
-docker tag firelens:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest
+docker tag firelens:0.0.1 ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-nextjs-ecs-firelens:0.0.1
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-nextjs-ecs-firelens:0.0.1
 ```

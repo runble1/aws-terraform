@@ -1,5 +1,6 @@
 locals {
-  service = "nextjs-ecs"
+  service  = "nextjs-ecs"
+  registry = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com"
 }
 
 module "network" {
@@ -30,12 +31,11 @@ module "log" {
 }
 
 module "ecs" {
-  source  = "../../modules/ecs"
-  service = "${var.env}-${local.service}"
-  key_arn = module.kms.key_arn
-  # 下記はコンテナデプロイ時に更新したい？
-  image_url = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${local.service}"
-  image_tag = "9443f5588948a6f7737fdf11f70b20a031237370"
+  source    = "../../modules/ecs"
+  service   = "${var.env}-${local.service}"
+  key_arn   = module.kms.key_arn
+  image_url = "${local.registry}/${var.env}-${local.service}-app"
+  image_tag = "0.0.1"
 }
 
 module "ecspresso" {
@@ -53,6 +53,6 @@ module "ecspresso" {
   ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
   ecs_task_role_arn           = module.ecs.ecs_task_role_arn
   app_image_url               = module.ecs.ecs_image_url #
-  firelens_image_url          = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/firelens:latest"
+  firelens_image_url          = "${local.registry}/${var.env}-${local.service}-firelens:0.0.1"
   kinesis_firehose_name       = module.log.kinesis_firehose_name
 }

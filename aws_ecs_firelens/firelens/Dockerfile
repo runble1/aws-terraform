@@ -1,5 +1,6 @@
 # ベースイメージの指定
-FROM amazon/aws-for-fluent-bit:latest
+FROM public.ecr.aws/aws-observability/aws-for-fluent-bit:init-arm64-2.32.0
 
 # カスタムFluent Bit設定ファイルのコピー
-COPY fluent-bit.conf /fluent-bit/etc/fluent-bit.conf
+COPY ./extra.conf /fluent-bit/etc/extra.conf
+COPY ./parsers_json.conf /fluent-bit/etc/parsers_json.conf
