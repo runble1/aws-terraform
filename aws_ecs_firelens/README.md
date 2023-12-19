@@ -61,7 +61,7 @@ aws-vault exec test
 ```
 aws ecs execute-command  \
     --cluster dev-nextjs-ecs-cluster \
-    --task 0f2b03d7135f461fbc14cb39ea3b7c14 \
+    --task b61ff4f3ff4d4fa081fde26ad7d835b6 \
     --container dev-nextjs-ecs-container \
     --interactive \
     --command "/bin/sh"
@@ -70,7 +70,7 @@ aws ecs execute-command  \
 ```
 aws ecs execute-command  \
     --cluster dev-nextjs-ecs-cluster \
-    --task 924cdaa07e3d4ec9b8371103856c8af5 \
+    --task 095c4759a254437a8f6aee01764df96b \
     --container firelens-container \
     --interactive \
     --command "/bin/sh"
