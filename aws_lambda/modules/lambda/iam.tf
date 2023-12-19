@@ -26,6 +26,6 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_for_APIGateway" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name               = "${var.env}-AWSAlertSlackbotLambdaRole"
+  name               = "${var.function_name}-AWSAlertSlackbotLambdaRole"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
