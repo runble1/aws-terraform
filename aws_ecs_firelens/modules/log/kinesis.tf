@@ -5,6 +5,9 @@ resource "aws_kinesis_firehose_delivery_stream" "this" {
   extended_s3_configuration {
     role_arn   = aws_iam_role.firehose_role.arn
     bucket_arn = aws_s3_bucket.this.arn
+
+    buffering_size     = 10
+    compression_format = "GZIP"
   }
 }
 
@@ -39,7 +42,6 @@ resource "aws_iam_role_policy" "firehose_policy" {
           "s3:ListBucket",
           "s3:ListBucketMultipartUploads",
           "s3:PutObject",
-          "s3:*"
         ],
         Effect = "Allow",
         Resource = [

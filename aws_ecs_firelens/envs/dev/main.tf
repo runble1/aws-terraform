@@ -52,7 +52,7 @@ module "ecspresso" {
   cluster_name                = module.ecs.ecs_cluster_name
   ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
   ecs_task_role_arn           = module.ecs.ecs_task_role_arn
-  app_image_url               = module.ecs.ecs_image_url #
+  app_image_url               = module.ecs.ecs_image_url
   firelens_image_url          = "${local.registry}/${var.env}-${local.service}-firelens:0.0.1"
   kinesis_firehose_name       = module.log.kinesis_firehose_name
 }
