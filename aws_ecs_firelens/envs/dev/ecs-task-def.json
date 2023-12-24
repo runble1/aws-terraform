@@ -32,7 +32,7 @@
       ]
     },
     {
-      "name": "firelens-container",
+      "name": "log-router",
       "essential": true,
       "image":  "{{ env `FIRELENS_IMAGE_URL` ``}}",
       "cpu": 128,
@@ -48,9 +48,17 @@
       "firelensConfiguration": {
         "type": "fluentbit",
         "options": {
+          "enable-ecs-log-metadata": "false",
           "config-file-type": "file",
           "config-file-value": "/fluent-bit/etc/extra.conf"
         }
+      },
+      "healthCheck": {
+        "retries": 2,
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://127.0.0.1:2020/api/v1/uptime || exit 1"
+        ]
       }
     }
   ],
