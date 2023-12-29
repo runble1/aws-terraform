@@ -44,6 +44,14 @@ resource "aws_iam_role_policy" "firehose_policy" {
         ],
         Effect   = "Allow",
         Resource = "*"
+      },
+      {
+        Action = [
+          "lambda:InvokeFunction",
+          "lambda:GetFunctionConfiguration"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
       }
     ]
   })
@@ -66,7 +74,7 @@ resource "aws_iam_role_policy" "cloudwatch_to_firehose_policy" {
   })
 }
 
-
+# ToDo:あとで消す
 resource "aws_iam_role_policy_attachment" "ecs_tas_test" {
   role       = aws_iam_role.firehose_role.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"

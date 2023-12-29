@@ -1,19 +1,10 @@
-# Github Apps
-Github Code Scanning でアラートが Open になると Lambda へ通知され、Lambda から Slack へ通知
-
-## Development
-```
-
-```
+# Lambda 
 
 ## Deploy
-### Slack Bot Token
-https://api.slack.com/apps
+```
+aws-vault exec test
+```
 
-### Github Token
-https://github.com/settings/tokens?type=beta
-
-## Code Scannning
-### Slackへ
-
-### Issue化
+```
+terraform apply
+```
