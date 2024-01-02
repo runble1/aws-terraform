@@ -35,6 +35,9 @@ resource "aws_lambda_function" "aws_alert_function" {
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
 
+  #layers = ["arn:aws:lambda:ap-northeast-1:404307571516:layer:nodejs-example-telemetry-api-extension:5"]
+  layers = [var.lambda_layer_arn]
+
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy
   ]
@@ -43,3 +46,12 @@ resource "aws_lambda_function" "aws_alert_function" {
     Name = "${var.function_name}"
   }
 }
+
+# ====================
+# Functional URLs
+# ====================
+resource "aws_lambda_function_url" "aws_alert_function" {
+  function_name      = aws_lambda_function.aws_alert_function.function_name
+  authorization_type = "NONE"
+}
+

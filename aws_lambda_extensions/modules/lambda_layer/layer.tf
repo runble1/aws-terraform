@@ -3,7 +3,7 @@
 # ====================
 resource "null_resource" "build_lambda_layer" {
   provisioner "local-exec" {
-    command = "cd ../../app && npm install && npm run build"
+    command = "cd ../../app_layer && npm install && npm run build"
   }
 
   triggers = {
@@ -28,8 +28,8 @@ data "archive_file" "layer_source" {
 resource "aws_lambda_layer_version" "lambda_extension_layer" {
   layer_name = "${var.function_name}-layer"
 
-  filename         = data.archive_file.function_source.output_path
-  source_code_hash = data.archive_file.function_source.output_base64sha256
+  filename         = data.archive_file.layer_source.output_path
+  source_code_hash = data.archive_file.layer_source.output_base64sha256
 
   compatible_runtimes = ["nodejs20.x"]
 }

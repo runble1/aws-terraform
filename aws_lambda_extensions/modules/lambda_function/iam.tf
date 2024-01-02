@@ -38,8 +38,8 @@ resource "aws_iam_role_policy_attachment" "lambda_firehose_policy_attachment" {
   policy_arn = aws_iam_policy.lambda_firehose_policy.arn
 }
 
-
 resource "aws_iam_role" "lambda_role" {
   name               = "${var.function_name}-LambdaRole"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
+
