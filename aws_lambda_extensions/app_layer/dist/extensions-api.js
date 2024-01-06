@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,18 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.next = exports.register = void 0;
-const node_fetch_1 = __importDefault(require("node-fetch"));
-const path_1 = require("path");
+import fetch from 'node-fetch';
+import { basename } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const baseUrl = `http://${process.env.AWS_LAMBDA_RUNTIME_API}/2020-01-01/extension`;
-function register() {
+export function register() {
     return __awaiter(this, void 0, void 0, function* () {
         console.info('[extensions-api:register] Registering using baseUrl', baseUrl);
-        const res = yield (0, node_fetch_1.default)(`${baseUrl}/register`, {
+        const res = yield fetch(`${baseUrl}/register`, {
             method: 'POST',
             body: JSON.stringify({
                 'events': [
@@ -29,7 +27,7 @@ function register() {
             }),
             headers: {
                 'Content-Type': 'application/json',
-                'Lambda-Extension-Name': (0, path_1.basename)(__dirname),
+                'Lambda-Extension-Name': basename(__dirname),
             }
         });
         if (!res.ok) {
@@ -46,11 +44,10 @@ function register() {
         }
     });
 }
-exports.register = register;
-function next(extensionId) {
+export function next(extensionId) {
     return __awaiter(this, void 0, void 0, function* () {
         console.info('[extensions-api:next] Waiting for next event');
-        const res = yield (0, node_fetch_1.default)(`${baseUrl}/event/next`, {
+        const res = yield fetch(`${baseUrl}/event/next`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,4 +65,3 @@ function next(extensionId) {
         }
     });
 }
-exports.next = next;

@@ -1,33 +1,33 @@
-import AWS from 'aws-sdk';
+import { FirehoseClient, PutRecordBatchCommand } from "@aws-sdk/client-firehose";
 
-const firehose = new AWS.Firehose();
+const firehoseClient = new FirehoseClient({});
 
 const firehoseStreamName = 'dev-lambda-extension-telemetry-api-log-stream';
 const dispatchMinBatchSize = 10;
 
-interface Record {
-    Data: string;
-}
-
-interface PutRecordBatchRequest {
-    DeliveryStreamName: string;
-    Records: Record[];
-}
+type FirehoseRecord = {
+    Data: Uint8Array;
+};
 
 export async function dispatch(queue: any[], force: boolean): Promise<void> {
     if (queue.length !== 0 && (force || queue.length >= dispatchMinBatchSize)) {
         console.log('[telemetry-dispatcher:dispatch] Dispatching', queue.length, 'telemetry events');
-        const records = queue.map(item => ({ Data: JSON.stringify(item) }));
+        
+        const records: FirehoseRecord[] = queue.map(item => ({
+            Data: new TextEncoder().encode(JSON.stringify(item))
+        }));
         queue.splice(0);
 
-        const params: PutRecordBatchRequest = {
+        const params = {
             DeliveryStreamName: firehoseStreamName,
             Records: records
         };
 
+        const command = new PutRecordBatchCommand(params);
+
         try {
-            const data = await firehose.putRecordBatch(params).promise();
-            console.log('Log data sent to Firehose:', data);
+            const data = await firehoseClient.send(command);
+            console.log('Log data sent to Firehose:', JSON.stringify(data));
         } catch (err) {
             console.error('Error sending log data to Firehose:', err);
         }

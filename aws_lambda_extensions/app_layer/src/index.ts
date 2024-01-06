@@ -1,8 +1,8 @@
-import * as extensionsApi from './extensions-api';
-import * as telemetryApi from './telemetry-api';
-import * as telemetryListener from './telemetry-listener';
-import * as telemetryDispatcher from './telemetry-dispatcher';
-import { LambdaEvent } from './extensions-api';
+import * as extensionsApi from './extensions-api.js';
+import * as telemetryApi from './telemetry-api.js';
+import * as telemetryListener from './telemetry-listener.js';
+import * as telemetryDispatcher from './telemetry-dispatcher.js';
+import { LambdaEvent } from './extensions-api.js';
 
 async function main() {
     process.on('SIGINT', () => handleShutdown('SIGINT'));

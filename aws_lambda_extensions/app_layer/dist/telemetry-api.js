@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,19 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.subscribe = void 0;
-const node_fetch_1 = __importDefault(require("node-fetch"));
+import fetch from 'node-fetch';
 const baseUrl = `http://${process.env.AWS_LAMBDA_RUNTIME_API}/2022-07-01/telemetry`;
 const TIMEOUT_MS = 1000; // Maximum time (in milliseconds) that a batch is buffered.
 const MAX_BYTES = 256 * 1024; // Maximum size in bytes that the logs are buffered in memory.
 const MAX_ITEMS = 10000; // Maximum number of events that are buffered in memory.
-function subscribe(extensionId, listenerUri) {
+export function subscribe(extensionId, listenerUri) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('[telemetry-api:subscribe] Subscribing', { baseUrl, extensionId, listenerUri });
+        console.log('[telemetry-api:subscribe] Subscribing', JSON.stringify({ baseUrl, extensionId, listenerUri }));
         const subscriptionBody = {
             schemaVersion: "2022-07-01",
             destination: {
@@ -34,7 +28,7 @@ function subscribe(extensionId, listenerUri) {
                 maxItems: MAX_ITEMS
             }
         };
-        const res = yield (0, node_fetch_1.default)(baseUrl, {
+        const res = yield fetch(baseUrl, {
             method: 'PUT',
             body: JSON.stringify(subscriptionBody),
             headers: {
@@ -55,4 +49,3 @@ function subscribe(extensionId, listenerUri) {
         }
     });
 }
-exports.subscribe = subscribe;

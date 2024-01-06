@@ -20,7 +20,7 @@ interface SubscriptionBody {
 }
 
 export async function subscribe(extensionId: string, listenerUri: string): Promise<void> {
-    console.log('[telemetry-api:subscribe] Subscribing', { baseUrl, extensionId, listenerUri });
+    console.log('[telemetry-api:subscribe] Subscribing', JSON.stringify({ baseUrl, extensionId, listenerUri }));
 
     const subscriptionBody: SubscriptionBody = {
         schemaVersion: "2022-07-01",
