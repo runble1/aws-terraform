@@ -36,6 +36,12 @@ resource "aws_lambda_function" "aws_alert_function" {
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
 
+  environment {
+    variables = {
+      KINESIS_FIREHOSE_NAME = var.kinesis_firehose_name
+    }
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy
   ]

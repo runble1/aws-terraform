@@ -1,5 +1,7 @@
 import { PutRecordCommand, FirehoseClient } from "@aws-sdk/client-firehose";
 
+const firehoseName = process.env.KINESIS_FIREHOSE_NAME;
+
 export const handler = async (event: any, context: any): Promise<any> => {
   const requestId = event.requestContext.requestId;
   const logData = {
@@ -12,7 +14,7 @@ export const handler = async (event: any, context: any): Promise<any> => {
 
   const firehoseClient = new FirehoseClient({ region: "ap-northeast-1" });
   const params = {
-    DeliveryStreamName: "dev-lambda-cwl-log-stream",
+    DeliveryStreamName: firehoseName,
     Record: { Data: Buffer.from(JSON.stringify(logData) + "\n") },
   };
 
