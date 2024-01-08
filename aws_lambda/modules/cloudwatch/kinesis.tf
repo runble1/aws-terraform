@@ -25,9 +25,9 @@ resource "aws_kinesis_firehose_delivery_stream" "this" {
 
     # CloudWatch エラーロギング設定を追加
     cloudwatch_logging_options {
-      enabled = true
-      log_group_name   = aws_cloudwatch_log_group.kinesis_error.name
-      log_stream_name  = "S3Delivery"
+      enabled         = true
+      log_group_name  = aws_cloudwatch_log_group.kinesis_error.name
+      log_stream_name = "S3Delivery"
     }
   }
 }

@@ -8,10 +8,10 @@ module "lambda_processor" {
 }
 
 module "cloudwatch" {
-  source            = "../../modules/cloudwatch"
-  function_name     = "${var.env}-${local.service}"
-  service           = "${var.env}-${local.service}"
-  log_group_name    = "/aws/lambda/${var.env}-${local.service}"
+  source               = "../../modules/cloudwatch"
+  function_name        = "${var.env}-${local.service}"
+  service              = "${var.env}-${local.service}"
+  log_group_name       = "/aws/lambda/${var.env}-${local.service}"
   lambda_processor_arn = module.lambda_processor.lambda_processor_arn
 }
 
