@@ -15,7 +15,7 @@ export const handler = async (event: any, context: any): Promise<any> => {
   const firehoseClient = new FirehoseClient({ region: "ap-northeast-1" });
   const params = {
     DeliveryStreamName: firehoseName,
-    Record: { Data: Buffer.from(JSON.stringify(logData) + "\n") },
+    Record: { Data: Buffer.from(JSON.stringify(logData) + "\n", 'utf8') }, // UTF-8でエンコード
   };
 
   try {
