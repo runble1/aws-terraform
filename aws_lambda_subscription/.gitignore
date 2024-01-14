@@ -1,0 +1,10 @@
+# archive
+archive*
+
+# app
+app/dist/**
+app/node_modules/**
+
+#
+app_processor/dist/**
+app_processor/node_modules/**
