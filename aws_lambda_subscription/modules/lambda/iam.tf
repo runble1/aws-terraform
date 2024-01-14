@@ -15,16 +15,6 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_policy_for_VPC" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonVPCFullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_policy_for_APIGateway" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess"
-}
-
 resource "aws_iam_role" "lambda_role" {
   name               = "${var.function_name}-AWSAlertSlackbotLambdaRole"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json

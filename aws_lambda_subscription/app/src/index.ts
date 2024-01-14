@@ -1,19 +1,16 @@
 import { Logger } from '@aws-lambda-powertools/logger';
 
-const logger = new Logger();
+const logger = new Logger({ serviceName: '', logLevel: 'INFO' });
 
 export const handler = async (event: any, context: any): Promise<any> => {
   const requestId = event.requestContext.requestId;
   const logData = {
-    message: "OK",
-    requestId: requestId,
-    method: event.httpMethod,
-    path: event.path,
-    queryParams: event.queryStringParameters,
+    message: "user_activity_log",
+    requestId: requestId
   };
 
-  logger.info('powertools', logData);
-  console.log('console', logData)
+  logger.info(logData);
+  //console.log(logData)
 
   return {
     statusCode: 200,

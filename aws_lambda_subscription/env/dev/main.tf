@@ -27,7 +27,6 @@ module "cloudwatch" {
   kinesis_firehose_arn = module.kinesis.kinesis_firehose_arn
 }
 
-
 module "lambda" {
   source        = "../../modules/lambda"
   function_name = "${var.env}-${local.service}"

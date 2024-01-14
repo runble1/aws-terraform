@@ -1,5 +1,5 @@
 resource "aws_iam_role" "cloudwatch_to_firehose_role" {
-  name = "CloudWatchToFirehoseRole"
+  name = "${var.service}-CloudWatchToFirehoseRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",

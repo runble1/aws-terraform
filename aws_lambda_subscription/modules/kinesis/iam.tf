@@ -1,7 +1,5 @@
-
-# subsription filter -> firehose -> s3
 resource "aws_iam_role" "firehose_role" {
-  name = "firehose_to_s3_role"
+  name = "${var.service}-FirehoseToS3Role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -10,7 +8,7 @@ resource "aws_iam_role" "firehose_role" {
         Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
-          Service = ["firehose.amazonaws.com", "logs.ap-northeast-1.amazonaws.com"]
+          Service = ["firehose.amazonaws.com"]
         },
       },
     ]
@@ -34,16 +32,9 @@ resource "aws_iam_role_policy" "firehose_policy" {
         ],
         Effect = "Allow",
         Resource = [
-          "*"
+          "${var.s3_bucket_arn}",
+          "${var.s3_bucket_arn}/*"
         ]
-      },
-      {
-        Action = [
-          "firehose:PutRecord",
-          "firehose:PutRecordBatch"
-        ],
-        Effect   = "Allow",
-        Resource = "*"
       },
       {
         Action = [
@@ -52,17 +43,7 @@ resource "aws_iam_role_policy" "firehose_policy" {
         ],
         Effect   = "Allow",
         Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy" "cloudwatch_to_firehose_policy" {
-  role = aws_iam_role.firehose_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
+      },
       {
         Action = [
           "logs:PutLogEvents"
