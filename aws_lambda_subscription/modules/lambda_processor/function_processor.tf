@@ -35,6 +35,13 @@ resource "aws_lambda_function" "this" {
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
 
+  logging_config {
+    application_log_level = "INFO"
+    log_format            = "JSON"
+    #log_group             = var.lambda_another_log_group
+    system_log_level      = "WARN"
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy
   ]
