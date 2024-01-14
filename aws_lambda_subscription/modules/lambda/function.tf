@@ -3,7 +3,13 @@
 # ====================
 resource "null_resource" "build_lambda" {
   provisioner "local-exec" {
-    command = "cd ../../app && npm install && npm run build"
+    command = <<EOT
+      cd ../../app
+      rm -rf dist/
+      npm install
+      npm run build
+      cp -R node_modules dist/
+    EOT
   }
 
   triggers = {
@@ -35,6 +41,13 @@ resource "aws_lambda_function" "aws_alert_function" {
 
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
+
+  logging_config {
+    application_log_level = "INFO"
+    log_format            = "JSON"
+    #log_group             = var.lambda_another_log_group
+    system_log_level = "WARN"
+  }
 
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy

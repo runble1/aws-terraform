@@ -1,12 +1,6 @@
 import { Logger } from '@aws-lambda-powertools/logger';
 
 const logger = new Logger();
-const firehoseName = process.env.KINESIS_FIREHOSE_NAME;
-
-// 環境変数の存在を検証
-if (!firehoseName) {
-  throw new Error('KINESIS_FIREHOSE_NAME is not set');
-}
 
 export const handler = async (event: any, context: any): Promise<any> => {
   const requestId = event.requestContext.requestId;
@@ -18,7 +12,8 @@ export const handler = async (event: any, context: any): Promise<any> => {
     queryParams: event.queryStringParameters,
   };
 
-  logger.info('Processing event', logData);
+  logger.info('powertools', logData);
+  console.log('console', logData)
 
   return {
     statusCode: 200,
