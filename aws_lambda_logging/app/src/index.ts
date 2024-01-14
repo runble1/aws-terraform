@@ -1,20 +1,15 @@
-let sendToFirehose: any;
-
 import { Logger } from '@aws-lambda-powertools/logger';
+import { sendToFirehose } from '/opt/nodejs/firehoseLoggerLayer'; // Lambda Layerから直接インポート
+
 const logger = new Logger();
-
-// Lambdaレイヤーから動的にモジュールを読み込む
-async function loadFirehoseLoggerLayer() {
-  if (!sendToFirehose) {
-    sendToFirehose = (await import('/opt/nodejs/firehoseLoggerLayer')).sendToFirehose;
-  }
-}
-
 const firehoseName = process.env.KINESIS_FIREHOSE_NAME;
 
-export const handler = async (event: any, context: any): Promise<any> => {
-  await loadFirehoseLoggerLayer(); // レイヤーからモジュールを読み込む
+// 環境変数の存在を検証
+if (!firehoseName) {
+  throw new Error('KINESIS_FIREHOSE_NAME is not set');
+}
 
+export const handler = async (event: any, context: any): Promise<any> => {
   const requestId = event.requestContext.requestId;
   const logData = {
     message: "OK",
@@ -24,10 +19,7 @@ export const handler = async (event: any, context: any): Promise<any> => {
     queryParams: event.queryStringParameters,
   };
 
-  console.log(logData);
-
-  logger.info('PowerTools');
-  logger.info(logData);
+  logger.info('Processing event', logData);
 
   await sendToFirehose(logData, firehoseName);
 

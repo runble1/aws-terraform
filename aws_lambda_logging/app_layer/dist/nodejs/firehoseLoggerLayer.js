@@ -11,9 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendToFirehose = void 0;
 const client_firehose_1 = require("@aws-sdk/client-firehose");
+// 環境変数や設定からリージョンを取得するように変更
+const region = process.env.AWS_REGION || 'ap-northeast-1';
+const firehoseClient = new client_firehose_1.FirehoseClient({ region: region });
 function sendToFirehose(logData, firehoseName) {
     return __awaiter(this, void 0, void 0, function* () {
-        const firehoseClient = new client_firehose_1.FirehoseClient({ region: "ap-northeast-1" });
         const params = {
             DeliveryStreamName: firehoseName,
             Record: { Data: Buffer.from(JSON.stringify(logData) + "\n", 'utf8') },
@@ -24,6 +26,7 @@ function sendToFirehose(logData, firehoseName) {
         }
         catch (error) {
             console.error("Error sending data to Firehose", error);
+            // 必要に応じてエラーを外部に通知する
         }
     });
 }
