@@ -10,42 +10,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const zlib_1 = require("zlib");
+const transformLogEvent = (logEvent) => {
+    try {
+        const messageData = JSON.parse(logEvent.message);
+        return JSON.stringify({ message: messageData.message, requestId: messageData.requestId });
+    }
+    catch (error) {
+        console.error("Error parsing message JSON: ", error, logEvent);
+        return '';
+    }
+};
 exports.handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
     const records = event.records.map(record => {
         try {
             const decompressed = (0, zlib_1.gunzipSync)(Buffer.from(record.data, 'base64'));
-            // CloudWatchLogsData インターフェースを使用して型を適用
             const data = JSON.parse(decompressed.toString('utf8'));
             if (data.messageType !== 'DATA_MESSAGE') {
+                console.error("Invalid message type: ", data.messageType);
                 return {
                     recordId: record.recordId,
                     result: 'ProcessingFailed',
                 };
             }
-            else {
-                const payload = data.logEvents
-                    .map(logEvent => {
-                    try {
-                        const messageData = JSON.parse(logEvent.message);
-                        return JSON.stringify({ message: messageData.message, requestId: messageData.requestId });
-                    }
-                    catch (error) {
-                        console.error("Error parsing message JSON: ", error);
-                        return '';
-                    }
-                })
-                    .filter((part) => part)
-                    .join('\n');
-                const encoded = Buffer.from(payload).toString('base64');
-                return {
-                    recordId: record.recordId,
-                    result: 'Ok',
-                    data: encoded,
-                };
-            }
+            const payload = data.logEvents.map(transformLogEvent).filter(part => part).join('\n');
+            const encoded = Buffer.from(payload).toString('base64');
+            return {
+                recordId: record.recordId,
+                result: 'Ok',
+                data: encoded,
+            };
         }
         catch (error) {
-            console.error(`Error processing record ${record.recordId}:`, error);
+            console.error(`Error processing record:`, error, record);
             return {
                 recordId: record.recordId,
                 result: 'ProcessingFailed',

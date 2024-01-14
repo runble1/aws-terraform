@@ -15,9 +15,8 @@ resource "aws_iam_role" "cloudwatch_to_firehose_role" {
   })
 }
 
-resource "aws_iam_policy" "cloudwatch_to_firehose_policy" {
-  name        = "CloudWatchToFirehosePolicy"
-  description = "A policy that allows CloudWatch Logs to put data into a Kinesis Firehose stream"
+resource "aws_iam_role_policy" "cloudwatch_to_firehose_policy" {
+  role = aws_iam_role.cloudwatch_to_firehose_role.id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -33,9 +32,3 @@ resource "aws_iam_policy" "cloudwatch_to_firehose_policy" {
     ]
   })
 }
-
-resource "aws_iam_role_policy_attachment" "cloudwatch_to_firehose_attach" {
-  role       = aws_iam_role.cloudwatch_to_firehose_role.name
-  policy_arn = aws_iam_policy.cloudwatch_to_firehose_policy.arn
-}
-
