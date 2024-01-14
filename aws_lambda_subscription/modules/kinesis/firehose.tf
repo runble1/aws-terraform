@@ -7,7 +7,7 @@ resource "aws_kinesis_firehose_delivery_stream" "this" {
     bucket_arn = var.s3_bucket_arn
 
     buffering_size     = 5
-    buffering_interval = 300
+    buffering_interval = 60
     compression_format = "GZIP"
 
     processing_configuration {
