@@ -46,7 +46,7 @@ resource "aws_lambda_function" "aws_alert_function" {
     application_log_level = "INFO"
     log_format            = "JSON"
     #log_group             = var.lambda_another_log_group
-    system_log_level      = "WARN"
+    system_log_level = "WARN"
   }
 
   depends_on = [
