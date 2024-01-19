@@ -17,7 +17,8 @@ interface CloudWatchLogsData {
 const transformLogEvent = (logEvent: { message: string }): string => {
   try {
     const messageData = JSON.parse(logEvent.message);
-    return JSON.stringify({ message: messageData.message, requestId: messageData.requestId });
+    // ここで改行を追加
+    return JSON.stringify({ message: messageData.message, requestId: messageData.requestId }) + '\n';
   } catch (error) {
     console.error("Error parsing message JSON: ", error, logEvent);
     return '';
@@ -38,7 +39,7 @@ exports.handler = async (event: FirehoseTransformationEvent): Promise<FirehoseTr
         };
       }
 
-      const payload = data.logEvents.map(transformLogEvent).filter(part => part).join('\n');
+      const payload = data.logEvents.map(transformLogEvent).join('');
       const encoded = Buffer.from(payload).toString('base64');
 
       return {
