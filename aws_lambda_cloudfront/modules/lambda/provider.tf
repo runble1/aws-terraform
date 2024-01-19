@@ -1,6 +1,6 @@
 // Lambda@Edgeのため
 terraform {
   required_providers {
-    aws = "5.32.1"
+    aws = "5.33.0"
   }
 }
