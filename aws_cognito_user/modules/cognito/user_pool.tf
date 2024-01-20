@@ -26,10 +26,9 @@ resource "aws_cognito_user_pool_client" "this" {
   allowed_oauth_flows                  = ["code", "implicit"]
   allowed_oauth_scopes                 = ["phone", "email", "openid", "profile", "aws.cognito.signin.user.admin"]
 
-  generate_secret = true
+  generate_secret = false # クライアントシークレット無効
 
   explicit_auth_flows = [
-    "ALLOW_CUSTOM_AUTH",
     "ALLOW_USER_SRP_AUTH",
     "ALLOW_REFRESH_TOKEN_AUTH",
     "ALLOW_USER_PASSWORD_AUTH"
@@ -39,15 +38,4 @@ resource "aws_cognito_user_pool_client" "this" {
 
   //read_attributes  = ["email", "custom:custom_attribute"]
   //write_attributes = ["email", "custom:custom_attribute"]
-}
-
-resource "aws_cognito_identity_pool" "this" {
-  identity_pool_name               = "${var.function_name}-identity-pool"
-  allow_unauthenticated_identities = true # 認証されていないアイデンティティを許可
-
-  cognito_identity_providers {
-    client_id               = aws_cognito_user_pool_client.this.id
-    provider_name           = aws_cognito_user_pool.this.endpoint
-    server_side_token_check = false
-  }
 }

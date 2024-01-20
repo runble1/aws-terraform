@@ -1,50 +1,75 @@
-import { DynamoDB } from 'aws-sdk';
+import {
+    CognitoUserPool,
+    CognitoUser,
+    AuthenticationDetails,
+  } from 'amazon-cognito-identity-js';
 import { Context, Callback } from 'aws-lambda';
+import * as crypto from 'crypto';
 
-console.log('Loading write function');
+  
+const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || '';
+const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID || '';
+const COGNITO_CLIENT_SECRET = process.env.COGNITO_CLIENT_SECRET || ''; // クライアントシークレットの環境変数
 
-const DYNAMODB_TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || '';
+//if (!COGNITO_USER_POOL_ID || !COGNITO_USER_POOL_CLIENT_ID || !COGNITO_CLIENT_SECRET) {
+if (!COGNITO_USER_POOL_ID || !COGNITO_USER_POOL_CLIENT_ID) {
+    throw new Error('Cognito User Pool ID, Client ID, and Client Secret must be set in environment variables');
+}
 
-const docClient = new DynamoDB.DocumentClient();
+function generateSecretHash(username: string): string {
+    return crypto.createHmac('SHA256', COGNITO_CLIENT_SECRET)
+                 .update(username + COGNITO_USER_POOL_CLIENT_ID)
+                 .digest('base64');
+}
 
-export const handler = (event: any, context: Context, callback: Callback) => {
-    console.log('Received event:', JSON.stringify(event, null, 2));
-
-    const artist = event.artist ? event.artist : (event.body ? JSON.parse(event.body).artist : null);
-    const title = event.title ? event.title : (event.body ? JSON.parse(event.body).title : null);
-
-    if (!artist || !title) {
-        callback(null, {
-            statusCode: 400,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ error: 'Both artist and title parameters are required' })
-        });
-        return;
-    }
-
-    const params = {
-        TableName: DYNAMODB_TABLE_NAME,
-        Item: {
-            Artist: artist,
-            Title: title
-        }
+async function authenticateUser(username: string, password: string) {
+    const secretHash = generateSecretHash(username);
+    const poolData = {
+      UserPoolId: COGNITO_USER_POOL_ID,
+      ClientId: COGNITO_USER_POOL_CLIENT_ID
     };
-
-    docClient.put(params, (err, data) => {
-        if (err) {
-            console.log('Error', err);
-            callback(null, {
-                statusCode: 500,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ error: err.message })
-            });
-        } else {
-            console.log('Success', data);
-            callback(null, {
-                statusCode: 200,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ success: 'Item successfully created' })
-            });
-        }
+  
+    const userPool = new CognitoUserPool(poolData);
+    const cognitoUser = new CognitoUser({
+      Username: username,
+      Pool: userPool
     });
+  
+    const authenticationDetails = new AuthenticationDetails({
+      Username: username,
+      Password: password
+    });
+  
+    return new Promise((resolve, reject) => {
+        cognitoUser.authenticateUser(authenticationDetails, {
+          onSuccess: resolve,
+          onFailure: reject,
+          newPasswordRequired: () => {
+            reject(new Error('New password required'));
+          }
+        });
+      });
+    }
+  
+  export const handler = async (event: any, context: any): Promise<any> => {
+    try {
+      // ここでusernameとpasswordはeventから取得するか、固定値を使用する
+      const username = 'test1';
+      const password = '123456789tT!';
+  
+      const authResult = await authenticateUser(username, password);
+  
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(authResult),
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: error.message }),
+      };
+    }
 };
+  
