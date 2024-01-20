@@ -44,7 +44,7 @@ resource "aws_lambda_function" "aws_alert_function" {
   logging_config {
     application_log_level = "INFO"
     log_format            = "JSON"
-    system_log_level      = "WARN"
+    system_log_level      = "INFO"
   }
 
   kms_key_arn = aws_kms_key.lambda_key.arn #環境変数の暗号化

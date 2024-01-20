@@ -1,8 +1,13 @@
 # Cognito
 
 ## Usage
-1. コンソールからユーザ作成
-2. パスワード変更
+1. Cognito 作成
+```
+terraform apply -target=module.cognito
+```
+
+2. コンソールからユーザ作成
+3. パスワード変更
 
 ```
 aws cognito-idp admin-set-user-password \
@@ -12,3 +17,7 @@ aws cognito-idp admin-set-user-password \
   --permanent
 ```
 
+4. パスワードがlambda app 作成
+```
+terraform apply -target=module.lambda
+```

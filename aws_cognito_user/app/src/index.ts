@@ -2,10 +2,12 @@ import {
     CognitoUserPool,
     CognitoUser,
     AuthenticationDetails,
-  } from 'amazon-cognito-identity-js';
-import { Context, Callback } from 'aws-lambda';
-import * as crypto from 'crypto';
+} from 'amazon-cognito-identity-js';
+import { jwtDecode } from "jwt-decode";
 
+interface DecodedToken {
+  jti?: string;  // nonceクレームはオプショナル
+}
   
 const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || '';
 const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID || '';
@@ -16,14 +18,7 @@ if (!COGNITO_USER_POOL_ID || !COGNITO_USER_POOL_CLIENT_ID) {
     throw new Error('Cognito User Pool ID, Client ID, and Client Secret must be set in environment variables');
 }
 
-function generateSecretHash(username: string): string {
-    return crypto.createHmac('SHA256', COGNITO_CLIENT_SECRET)
-                 .update(username + COGNITO_USER_POOL_CLIENT_ID)
-                 .digest('base64');
-}
-
-async function authenticateUser(username: string, password: string) {
-    const secretHash = generateSecretHash(username);
+async function authenticateUser(username: string, password: string): Promise<string> {
     const poolData = {
       UserPoolId: COGNITO_USER_POOL_ID,
       ClientId: COGNITO_USER_POOL_CLIENT_ID
@@ -42,7 +37,10 @@ async function authenticateUser(username: string, password: string) {
   
     return new Promise((resolve, reject) => {
         cognitoUser.authenticateUser(authenticationDetails, {
-          onSuccess: resolve,
+          onSuccess: (result) => {
+            const idToken = result.getIdToken().getJwtToken();
+            resolve(idToken);
+          },
           onFailure: reject,
           newPasswordRequired: () => {
             reject(new Error('New password required'));
@@ -50,19 +48,22 @@ async function authenticateUser(username: string, password: string) {
         });
       });
     }
-  
-  export const handler = async (event: any, context: any): Promise<any> => {
+
+export const handler = async (event: any, context: any): Promise<any> => {
     try {
-      // ここでusernameとpasswordはeventから取得するか、固定値を使用する
       const username = 'test1';
       const password = '123456789tT!';
   
-      const authResult = await authenticateUser(username, password);
+      const idToken = await authenticateUser(username, password);
   
+      // IDトークンのデコード
+      const decodedToken: DecodedToken = jwtDecode(idToken);
+      const jti = decodedToken.jti; // jti クレームの取得
+
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(authResult),
+        body: JSON.stringify({ jti }),
       };
     } catch (error) {
       return {
@@ -71,5 +72,5 @@ async function authenticateUser(username: string, password: string) {
         body: JSON.stringify({ error: error.message }),
       };
     }
-};
+  };
   
