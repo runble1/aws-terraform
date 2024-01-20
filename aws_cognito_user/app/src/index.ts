@@ -68,12 +68,12 @@ export const handler = async (event: any, context: any): Promise<any> => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jti }),
     };
-  } catch (error) {
-    return {
-      statusCode: error.statusCode || 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: error.message }),
-    };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+    } else {
+      console.log('An unknown error occurred');
+    }
   }
 };
   
