@@ -36,8 +36,7 @@ resource "aws_lambda_function" "aws_alert_function" {
   handler       = "index.handler"
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs20.x"
-  timeout       = 10
-  kms_key_arn   = aws_kms_key.lambda_key.arn #環境変数の暗号化
+  timeout       = 30
 
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
@@ -45,8 +44,16 @@ resource "aws_lambda_function" "aws_alert_function" {
   logging_config {
     application_log_level = "INFO"
     log_format            = "JSON"
-    #log_group             = var.lambda_another_log_group
-    system_log_level = "WARN"
+    system_log_level      = "INFO"
+  }
+
+  kms_key_arn = aws_kms_key.lambda_key.arn #環境変数の暗号化
+  environment {
+    variables = {
+      COGNITO_USER_POOL_ID        = var.cognito_user_pool_id
+      COGNITO_USER_POOL_CLIENT_ID = var.cognito_user_pool_client_id
+      COGNITO_CLIENT_SECRET       = var.cognito_client_secret
+    }
   }
 
   depends_on = [

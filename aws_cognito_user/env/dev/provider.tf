@@ -11,12 +11,12 @@ provider "aws" {
 terraform {
   required_version = ">= 1.3.8"
   required_providers {
-    aws = "5.33.0"
+    aws = "5.32.1"
   }
   backend "s3" {
     region  = "ap-northeast-1"
     bucket  = "runble1-tfstate"
-    key     = "all_in_one/aws_cognito/terraform.tfstate"
+    key     = "all_in_one/aws_cognito_user/terraform.tfstate"
     encrypt = true
   }
 }
