@@ -1,0 +1,12 @@
+region: ap-northeast-1  # AWSリージョン
+#cluster: {{ (env `CLUSTER_NAME` ``) }} # ECSクラスター名
+#service: {{ (env `SERVICE_NAME` ``) }}  # ECSサービス名
+cluster: dev-cognito-cluster
+service: dev-cognito-service
+service_definition: ecs-service-def.json
+task_definition: ecs-task-def.json
+timeout: "10m0s"
+plugins:
+  - name: tfstate
+    config:
+      url: s3://runble1-tfstate/all_in_one/aws_ecs_fargate/terraform.tfstate
