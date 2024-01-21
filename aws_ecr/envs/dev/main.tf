@@ -6,7 +6,12 @@ module "nextjs" {
 
 module "firelens" {
   source        = "../../modules/firelens"
-  name          = "dev-nextjs-ecs-firelens"
+  name          = "dev-ecs-firelens"
   holding_count = 1
 }
 
+module "cognito" {
+  source        = "../../modules/cognito"
+  name          = "dev-ecs-cognito"
+  holding_count = 1
+}
