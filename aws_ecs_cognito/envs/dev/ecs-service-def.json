@@ -24,7 +24,7 @@
   ],
   "networkConfiguration": {
     "awsvpcConfiguration": {
-      "assignPublicIp": "DISABLED",
+      "assignPublicIp": "ENABLED",
       "securityGroups": [
         "{{ or (env `SECURITY_GROUP_ID` ``) (tfstate `module.ecs.aws_security_group.ecs.id`) }}"
       ],

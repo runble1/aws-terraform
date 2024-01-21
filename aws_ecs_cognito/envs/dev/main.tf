@@ -52,8 +52,8 @@ module "ecspresso" {
   source                      = "../../modules/ecspresso"
   product                     = "${var.env}-${local.service}"
   vpc_id                      = module.network.vpc_id
-  subnet_1a_id                = module.network.subnet_private_1a_id
-  subnet_1c_id                = module.network.subnet_private_1c_id
+  subnet_1a_id                = module.network.subnet_public_1a_id
+  subnet_1c_id                = module.network.subnet_public_1c_id
   alb_target_group_arn        = module.alb.target_group_arn
   alb_sg_id                   = module.alb.alb_sg_id
   ecs_sg_id                   = module.alb.ecs_sg_id
