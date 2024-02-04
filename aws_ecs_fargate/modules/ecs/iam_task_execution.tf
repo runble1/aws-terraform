@@ -1,6 +1,7 @@
 # タスク実行ロール
+# ECSサービスがタスクの実行に必要な操作を行うため
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "${var.service}-ecs-execution-role"
+  name               = "${var.product}-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -26,7 +27,7 @@ resource "aws_iam_role_policy_attachment" "ecs_container_registry_read_only" {
 }
 
 resource "aws_iam_policy" "ecs_cloudwatch_logs_policy" {
-  name        = "${var.service}-ecs-cloudwatch-logs-policy"
+  name        = "${var.product}-ecs-cloudwatch-logs-policy"
   description = "Allow ECS tasks to write logs to CloudWatch"
 
   policy = <<EOF
@@ -36,13 +37,12 @@ resource "aws_iam_policy" "ecs_cloudwatch_logs_policy" {
     {
       "Effect": "Allow",
       "Action": [
+        "logs:DescribeLogGroups",
         "logs:CreateLogStream",
         "logs:PutLogEvents",
         "logs:CreateLogGroup"
       ],
-      "Resource": [
-        "arn:aws:logs:*:*:log-group:/ecs/${var.service}:*"
-      ]
+      "Resource": "*"
     }
   ]
 }
@@ -52,59 +52,4 @@ EOF
 resource "aws_iam_role_policy_attachment" "ecs_cloudwatch_logs_policy_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.ecs_cloudwatch_logs_policy.arn
-}
-
-# タスクロール
-resource "aws_iam_role" "ecs_task_role" {
-  name = "${var.service}-ecs-task-role"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_policy" "ecs_exec_additional_policy" {
-  name        = "${var.service}-ecs-exec-policy"
-  description = "Additional permissions required for ECS Exec"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ssmmessages:CreateControlChannel",
-        "ssmmessages:CreateDataChannel",
-        "ssmmessages:OpenControlChannel",
-        "ssmmessages:OpenDataChannel"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ecs:ExecuteCommand"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_exec_additional_policy_attachment" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = aws_iam_policy.ecs_exec_additional_policy.arn
 }

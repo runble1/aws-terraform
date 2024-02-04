@@ -1,19 +1,14 @@
 # ECS + Fargate
 
-## Deploy
-```
-aws-vault exec test
-docker compose up
-docker compose run --rm terraform init
-```
+最小コスト、最小構成で
 
-### 1. コンテナレジストリとコードリポジトリ作成
-```
-terraform apply -target=module.ecr
-```
-
-### 1.5
+### 0
 ECRへイメージプッシュ
+
+### 1 S3
+```
+terraform apply -target=module.s3
+```
 
 ### 2 Network
 ```
@@ -25,18 +20,22 @@ terraform apply -target=module.network
 terraform apply --target=module.alb
 ```
 
-### 4 CloudWatch
+### 4 KMS
 ```
-terraform apply --target=module.cloudwatch
+terraform apply --target=module.kms
 ```
 
-### 5 ECS
-tagを最初だけ手打ち
+### 5 log
+```
+terraform apply --target=module.log
+```
+
+### 6 ECS
 ```
 terraform apply --target=module.ecs
 ```
 
-### 6 ecspressoでデプロイ
+### 7 ecspressoでデプロイ
 ```
 terraform apply --target=module.ecspresso
 or
@@ -47,10 +46,6 @@ ecspresso deploy --config ecspresso.yml
 terraform state list
 terraform state show 
 ```
-
-### 7 Github Actions でデプロイ
-- タスク定義が更新された場合（Terraform）
-- アプリが更新された場合（Github Actions）
 
 ## 90 ECS Exec
 ```
@@ -71,35 +66,4 @@ aws ecs describe-tasks --cluster dev-nextjs-ecs-cluster --tasks cf57aca33cde4697
 ## 99 Destroy
 ```
 terraform destroy
-```
-
-## Security Check
-### Trivy
-#### Dockerfile Scanning
-開発
-```
-trivy config with-docker-compose-app/next-app/dev.Dockerfile
-```
-prod
-```
-trivy config with-docker-compose-app/next-app/prod.Dockerfile
-```
-
-#### Image Scanning
-```
-docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.47.0 image nextjs-app:latest
-```
-↓できない
-```
-trivy image --ignore-unfixed nextjs-app:latest
-```
-
-#### Secret Scanning
-```
-trivy fs ./
-```
-
-#### IoC Scanning
-```
-trivy config .
 ```

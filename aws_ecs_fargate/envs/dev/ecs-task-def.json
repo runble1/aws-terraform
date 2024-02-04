@@ -21,12 +21,12 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/{{ env `SERVICE_NAME`}}",
+          "awslogs-group": "{{ env `ECS_LOG_GROUP_NAME`}}",
           "awslogs-region": "ap-northeast-1",
           "awslogs-stream-prefix": "ecs"
         }
       },
-      "name": "{{ env `SERVICE_NAME`}}-container",
+      "name": "{{ env `PRODUCT_NAME`}}-container",
       "portMappings": [
         {
           "appProtocol": "",
@@ -41,7 +41,7 @@
   "memory": "512",
   "taskRoleArn": "{{ or (env `TASK_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_role.arn`) }}",
   "executionRoleArn": "{{ or (env `EXECUTION_ROLE_ARN` ``) (tfstate `module.ecs.aws_iam_role.ecs_task_execution_role.arn`) }}",
-  "family": "{{ env `SERVICE_NAME`}}-task-definition",
+  "family": "{{ env `PRODUCT_NAME`}}-task-definition",
   "ipcMode": "",
   "networkMode": "awsvpc",
   "pidMode": "",

@@ -1,6 +1,6 @@
 resource "null_resource" "ecspresso" {
   triggers = {
-    cluster            = var.cluster_name,
+    cluster            = var.ecs_cluster_name,
     execution_role_arn = var.ecs_task_execution_role_arn,
   }
 
@@ -8,20 +8,18 @@ resource "null_resource" "ecspresso" {
     command     = "ecspresso deploy"
     working_dir = "."
     environment = { // 環境変数で依存リソースの値(ecspressoで参照するもの)を渡す
-      ECS_CLUSTER        = var.cluster_name,
+      ECS_CLUSTER        = var.ecs_cluster_name,
       EXECUTION_ROLE_ARN = var.ecs_task_execution_role_arn,
       TASK_ROLE_ARN      = var.ecs_task_role_arn,
       SECURITY_GROUP_ID  = var.ecs_sg_id,
-      SUBNET_1A_ID       = var.subnet_private_1a_id,
-      SUBNET_1C_ID       = var.subnet_private_1c_id,
+      SUBNET_1A_ID       = var.subnet_1a_id,
+      SUBNET_1C_ID       = var.subnet_1a_id,
       TARGET_GROUP_ARN   = var.alb_target_group_arn,
       IMAGE_URL          = var.ecs_image_url
       APP_PORT           = var.app_port
-      SERVICE_NAME       = "${var.service}"
-      ECS_SERVICE_NAME   = "${var.service}-service"
-      #SERVICE_NAME = "dev-nextjs-ecs-service"
-      #CLUSTER_NAME = var.cluster_name
-      CLUSTER_NAME = "dev-nextjs-ecs-cluster"
+      PRODUCT_NAME       = "${var.product}"
+      ECS_SERVICE_NAME   = "${var.product}-service"
+      ECS_LOG_GROUP_NAME = var.ecs_log_group_name
     }
   }
 
@@ -33,8 +31,8 @@ resource "null_resource" "ecspresso" {
 }
 
 data "aws_ecs_service" "oneshot" {
-  cluster_arn  = var.cluster_name
-  service_name = "${var.service}-service"
+  cluster_arn  = var.ecs_cluster_name
+  service_name = "${var.product}-service"
   depends_on = [
     null_resource.ecspresso,
   ]
@@ -44,7 +42,7 @@ data "aws_ecs_service" "oneshot" {
 resource "aws_appautoscaling_target" "nginx" {
   max_capacity       = 10
   min_capacity       = 1
-  resource_id        = "service/${var.cluster_name}/${data.aws_ecs_service.oneshot.service_name}"
+  resource_id        = "service/${var.ecs_cluster_name}/${data.aws_ecs_service.oneshot.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }

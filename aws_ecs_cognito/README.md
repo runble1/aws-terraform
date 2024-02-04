@@ -52,7 +52,6 @@ terraform state show
 ### 7 API requst
 ```
 curl -X POST http://dev-cognito-alb-1791009463.ap-northeast-1.elb.amazonaws.com/authenticate -H "Content-Type: application/json" -d '{"username":"test1", "password":"123456789tT!"}'
-
 ```
 
 
@@ -83,35 +82,4 @@ aws ecs execute-command  \
 ## 99 Destroy
 ```
 terraform destroy
-```
-
-## Security Check
-### Trivy
-#### Dockerfile Scanning
-* 開発
-```
-trivy config with-docker-compose-app/next-app/dev.Dockerfile
-```
-* prod
-```
-trivy config with-docker-compose-app/next-app/prod.Dockerfile
-```
-
-#### Image Scanning
-```
-docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.47.0 image nextjs-app:latest
-```
-↓できない
-```
-trivy image --ignore-unfixed nextjs-app:latest
-```
-
-#### Secret Scanning
-```
-trivy fs ./
-```
-
-#### IoC Scanning
-```
-trivy config .
 ```
