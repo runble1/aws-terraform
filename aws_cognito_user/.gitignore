@@ -5,7 +5,4 @@ archive*
 app/dist/**
 app/node_modules/**
 
-app2/dist/**
-app2/node_modules/**
-
 **/output.txt

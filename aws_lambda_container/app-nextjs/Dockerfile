@@ -1,5 +1,5 @@
 # Multi-stage buildでNext.jsをビルド
-FROM node:21 AS builder
+FROM node:20-alpine AS builder
 WORKDIR /build
 COPY package*.json ./
 RUN npm ci

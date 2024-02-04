@@ -7,4 +7,4 @@ app/node_modules/**
 
 # layer
 app_layer/dist/**
-app/node_modules/**
+app_layer/node_modules/**
