@@ -1,11 +1,4 @@
-# Next.js + ECS Fargate
-
-## セキュリティチェック
-```
-Dockle : 
-git-secrets : 
-Trivy : 
-```
+# AWS
 
 ## repository
 ### .github

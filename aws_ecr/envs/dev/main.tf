@@ -15,3 +15,9 @@ module "cognito" {
   name          = "dev-ecs-cognito"
   holding_count = 1
 }
+
+module "lambda-nextjs-app" {
+  source        = "../../modules/nextjs"
+  name          = "dev-lambda-nextjs-app"
+  holding_count = 1
+}

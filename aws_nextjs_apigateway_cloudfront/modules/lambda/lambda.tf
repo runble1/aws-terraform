@@ -3,7 +3,7 @@ resource "aws_lambda_function" "this" {
   role          = aws_iam_role.lambda_role.arn
 
   package_type  = "Image"
-  image_uri     = "${var.repository_url}:latest"
+  image_uri     = "${var.repository_url}"
   architectures = ["arm64"]
 
   memory_size = 1024
@@ -14,6 +14,12 @@ resource "aws_lambda_function" "this" {
     variables = {
       #DYNAMODB_TABLE_NAME = var.dynamodb_table_name
     }
+  }
+
+  logging_config {
+    application_log_level = "INFO"
+    log_format            = "JSON"
+    system_log_level      = "INFO"
   }
 
   depends_on = [
