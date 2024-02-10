@@ -1,17 +1,8 @@
 # CloudFront + API Gateway + Lambda + Next.js
 
 ### 1. コンテナレジストリとコードリポジトリ作成
-env/dev
-```
-terraform apply -target=module.ecr
-```
 
 ### 2 準備
-```
-aws-vault exec test
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
-aws ecr --region ap-northeast-1 get-login-password | docker login --username AWS --password-stdin https://${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/
-```
 standaloneを作成
 ```
 cd app-nextjs

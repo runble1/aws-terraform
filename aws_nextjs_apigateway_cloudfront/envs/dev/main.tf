@@ -1,28 +1,24 @@
 locals {
-  service = "nextjs_cloudfront"
+  product        = "lambda-nextjs"
+  image_registry = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com"
+  app_image      = "${var.env}-lambda-nextjs-app:0.0.1"
 }
 
-module "ecr" {
-  source        = "../../modules/ecr"
-  name          = local.service
-  holding_count = 5
+module "s3" {
+  source      = "../../modules/s3"
+  bucket_name = "${var.env}-${local.product}"
 }
 
 module "cloudwatch" {
   source  = "../../modules/cloudwatch"
-  service = local.service
+  service = local.product
 }
 
 module "lambda" {
   source         = "../../modules/lambda"
   handler        = "index.handler"
-  function_name  = "${var.env}-${local.service}"
-  repository_url = module.ecr.repository_url
-}
-
-module "s3" {
-  source      = "../../modules/s3"
-  bucket_name = "${var.env}-${local.service}"
+  function_name  = "${var.env}-${local.product}"
+  repository_url = "${local.image_registry}/${local.app_image}"
 }
 
 module "api_gateway" {
