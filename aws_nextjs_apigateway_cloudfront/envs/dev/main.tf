@@ -1,3 +1,4 @@
+data "aws_caller_identity" "self" {}
 locals {
   product        = "lambda-nextjs"
   image_registry = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com"

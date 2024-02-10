@@ -1,10 +1,9 @@
-# FIRELENS
+# Next.js for Lambda
 
 ## Deploy
 
 ### standaloneを作成
 ```
-cd app-nextjs
 npm install
 npm run build
 ```
@@ -27,15 +26,15 @@ docker buildx build --platform linux/arm64 -t lambda-nextjs-app:0.0.1 .
 ```
 * 実行
 ```
-docker run -d --name my-running-container lambda-nextjs-app:0.0.1
+docker run -d --name lambda-nextjs-app -p 3000:3000 lambda-nextjs-app:0.0.1
 ```
 * ログイン
 ```
-docker exec -it my-running-container /bin/bash
+docker exec -it lambda-nextjs-app /bin/bash
 ```
 
 ### プッシュ
 ```
-docker tag firelens:0.0.1 ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-lambda-nextjs-app:0.0.1
+docker tag lambda-nextjs-app:0.0.1 ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-lambda-nextjs-app:0.0.1
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-lambda-nextjs-app:0.0.1
 ```
