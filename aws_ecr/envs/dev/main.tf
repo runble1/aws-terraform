@@ -21,3 +21,9 @@ module "lambda-nextjs-app" {
   name          = "dev-lambda-nextjs-app"
   holding_count = 1
 }
+
+module "lambda-nextjs-ssr-app" {
+  source        = "../../modules/nextjs"
+  name          = "dev-lambda-nextjs-ssr-app"
+  holding_count = 1
+}
