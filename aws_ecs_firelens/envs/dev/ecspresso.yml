@@ -9,4 +9,4 @@ timeout: "10m0s"
 plugins:
   - name: tfstate
     config:
-      url: s3://runble1-tfstate/all_in_one/aws_ecs_fargate/terraform.tfstate
+      url: s3://runble1-tfstate/all_in_one/aws_ecs_firelens/terraform.tfstate

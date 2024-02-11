@@ -18,7 +18,7 @@
       "linuxParameters": {
         "initProcessEnabled": true
       },
-      "image": "{{ or (env `IMAGE_URL` ``) (tfstate `module.ecs.aws_ssm_parameter.image_url.value`) }}",
+      "image": "{{ env `APP_IMAGE_URL` `` }}",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {

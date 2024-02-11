@@ -29,17 +29,16 @@ docker compose -f docker-compose.dev.yml down
 ```
 
 ## 手動デプロイ
-### ECR認証
+### 準備
 ```
 aws-vault exec test
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
-export REPOSITORY_URL=${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/nextjs-ecs
+export REPOSITORY_URL=${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-ecs-nextjs-app
+export GIT_COMMIT_ID=0.0.1
+```
+### ECR認証
+```
 aws ecr --region ap-northeast-1 get-login-password | docker login --username AWS --password-stdin https://${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/
-```
-
-### 準備
-```
-export GIT_COMMIT_ID=$(git rev-parse HEAD)
 ```
 
 ### ビルド(prod)

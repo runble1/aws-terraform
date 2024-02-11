@@ -1,5 +1,5 @@
 locals {
-  service  = "nextjs-ecs"
+  service  = "ecs-nextjs"
   registry = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com"
 }
 
@@ -53,6 +53,6 @@ module "ecspresso" {
   ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
   ecs_task_role_arn           = module.ecs.ecs_task_role_arn
   app_image_url               = module.ecs.ecs_image_url
-  firelens_image_url          = "${local.registry}/${var.env}-${local.service}-firelens:0.0.1"
+  firelens_image_url          = "${local.registry}/${var.env}-ecs-firelens:0.0.1"
   kinesis_firehose_name       = module.log.kinesis_firehose_name
 }
