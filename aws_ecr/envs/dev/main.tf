@@ -1,6 +1,6 @@
 module "nextjs" {
   source        = "../../modules/nextjs"
-  name          = "dev-nextjs-ecs-app"
+  name          = "dev-ecs-nextjs-app"
   holding_count = 1
 }
 

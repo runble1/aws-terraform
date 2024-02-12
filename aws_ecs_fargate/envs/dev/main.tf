@@ -1,7 +1,7 @@
 locals {
   product        = "nextjs-ecs"
   image_registry = "${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com"
-  app_image      = "${var.env}-nextjs-ecs-app:0.0.1"
+  app_image      = "${var.env}-ecs-nextjs-app:0.0.1"
 }
 
 module "s3" {
