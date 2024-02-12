@@ -17,3 +17,7 @@ output "alb_arn" {
 output "ecs_sg_id" {
   value = aws_security_group.ecs.id
 }
+
+output "alb_id" {
+  value = aws_lb.for_webserver.id
+}

@@ -27,6 +27,16 @@ module "alb" {
   s3_alb_bucket_name  = module.s3.s3_alb_bucket_name
 }
 
+module "cloudfront" {
+  source                      = "../../modules/cloudfront"
+  product                     = "${var.env}-${local.service}"
+  alb_id                      = module.alb.alb_id
+  alb_dns_name                = module.alb.public_dns
+  bucket_regional_domain_name = module.s3.bucket_regional_domain_name
+  bucket_arn                  = module.s3.bucket_arn
+  bucket_id                   = module.s3.bucket_id
+}
+
 module "kms" {
   source  = "../../modules/kms"
   service = "${var.env}-${local.service}"
@@ -63,3 +73,13 @@ module "ecspresso" {
   app_image_url               = "${local.image_registry}/${local.cognito_app_image}"
   ecs_log_group_name          = module.log.ecs_log_group_name
 }
+
+/*
+module "rds" {
+  source            = "../../modules/rds"
+  product           = "${var.env}-${local.service}"
+  vpc_id                      = module.network.vpc_id
+  subnet_1a_id                = module.network.subnet_private_1a_id
+  subnet_1c_id                = module.network.subnet_private_1c_id
+  ecs_sg_id                   = module.alb.ecs_sg_id  
+}*/

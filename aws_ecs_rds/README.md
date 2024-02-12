@@ -1,5 +1,6 @@
 # CloudFront + ALB + ECS + Fargate + RDS
-Next.jsとRDSを連携させる、最小コスト
+* Next.jsとRDSを連携させる、最小コスト
+* CloudFront経由でしかアクセスできない
 
 ### 1 ECRにイメージ登録
 
@@ -27,14 +28,19 @@ terraform state show
 ```
 aws-vault exec test
 ```
-* Next.js
+* コンテナログイン
 ```
 aws ecs execute-command  \
-    --cluster dev-nextjs-ecs-cluster \
-    --task fed6941fb1414ae5924820ab6d9c4eb4 \
-    --container dev-nextjs-ecs-container \
+    --cluster dev-ecs-rds-cluster \
+    --task ac703d14d38f40a6bd6e6b861f902e08 \
+    --container dev-ecs-rds-container \
     --interactive \
     --command "/bin/sh"
+```
+
+* RDSログイン
+```
+mysql -h terraform-20240212014009866900000001.crnha6jswwvy.ap-northeast-1.rds.amazonaws.com -P 3306 -u foo -pfoobarbaz kenjadb
 ```
 
 ## 99 Destroy

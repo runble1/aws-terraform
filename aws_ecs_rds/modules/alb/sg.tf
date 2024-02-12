@@ -1,5 +1,5 @@
 ####################################################
-# Internet -> ALB
+# CloudFront -> ALB
 ####################################################
 resource "aws_security_group" "alb" {
   name   = "${var.service}-alb-sg"
@@ -18,12 +18,12 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_security_group_rule" "alb_http" {
+  type              = "ingress"
   from_port         = var.lb_port
   to_port           = var.lb_port
   protocol          = "tcp"
   security_group_id = aws_security_group.alb.id
-  type              = "ingress"
-  cidr_blocks       = ["0.0.0.0/0"]
+  prefix_list_ids   = ["pl-58a04531"] # CloudFrontのマネージドプレフィックスリストID
 }
 
 ####################################################
