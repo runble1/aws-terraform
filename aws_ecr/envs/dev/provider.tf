@@ -15,8 +15,8 @@ terraform {
   }
   backend "s3" {
     region  = "ap-northeast-1"
-    bucket  = "runble1-tfstate"
-    key     = "all_in_one/aws_ecr/terraform.tfstate"
+    bucket  = "tfstate-runble1"
+    key     = "aws/aws_ecr/terraform.tfstate"
     encrypt = true
   }
 }
