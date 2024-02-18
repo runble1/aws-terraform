@@ -24,39 +24,43 @@ const schemaPath = path_1.default.join(__dirname, 'productPriceSchema.json');
 const productPriceSchema = JSON.parse((0, fs_1.readFileSync)(schemaPath, 'utf-8'));
 const validate = ajv.compile(productPriceSchema);
 exports.handler = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
-    const params = {
-        TableName: 'ProductPrices',
-        Key: {
-            ProductID: { S: 'EXAMPLE123' },
-            CheckDate: { S: '2023-02-18' },
-        },
+    const currentDateISO = new Date().toISOString();
+    const newItem = {
+        ProductID: 'EXAMPLE123',
+        CheckDate: currentDateISO, // 現在の日付
+        Price: 100,
+        PreviousPrice: 95,
+        PriceChange: 5,
+        Title: 'Example Product Title',
+        URL: 'https://www.amazon.com/dp/EXAMPLE123'
+    };
+    // JSON Schemaでのバリデーション
+    const valid = validate(newItem);
+    if (!valid) {
+        console.error(validate.errors);
+        throw new Error('Data validation failed');
+    }
+    // DynamoDBの期待する形式に変換
+    const dynamoDbItem = {
+        ProductID: { S: newItem.ProductID },
+        CheckDate: { S: newItem.CheckDate },
+        Price: { N: newItem.Price.toString() },
+        PreviousPrice: { N: newItem.PreviousPrice.toString() },
+        PriceChange: { N: newItem.PriceChange.toString() },
+        Title: { S: newItem.Title },
+        URL: { S: newItem.URL }
     };
     try {
-        const { Item } = yield client.send(new client_dynamodb_1.GetItemCommand(params));
-        if (!Item) {
-            return JSON.stringify({ message: 'Item not found' });
-        }
-        // DynamoDBのレスポンスを適切な形式に変換
-        const dataToValidate = {
-            ProductID: Item.ProductID.S,
-            CheckDate: Item.CheckDate.S,
-            Price: ((_a = Item.Price) === null || _a === void 0 ? void 0 : _a.N) ? parseFloat(Item.Price.N) : undefined,
-            PreviousPrice: ((_b = Item.PreviousPrice) === null || _b === void 0 ? void 0 : _b.N) ? parseFloat(Item.PreviousPrice.N) : undefined,
-            PriceChange: ((_c = Item.PriceChange) === null || _c === void 0 ? void 0 : _c.N) ? parseFloat(Item.PriceChange.N) : undefined,
-            Title: Item.Title.S,
-            URL: Item.URL.S,
-        };
-        // JSON Schemaでのバリデーション
-        const valid = validate(dataToValidate);
-        if (!valid) {
-            console.error(validate.errors);
-            throw new Error('Data validation failed');
-        }
-        return JSON.stringify(dataToValidate);
+        // DynamoDBにアイテムを書き込む
+        yield client.send(new client_dynamodb_1.PutItemCommand({
+            TableName: 'ProductPrices',
+            Item: dynamoDbItem
+        }));
+        console.log('Item successfully written to DynamoDB.');
+        return JSON.stringify({ message: 'Item successfully written to DynamoDB', item: newItem });
     }
     catch (err) {
-        console.error('Error', err);
-        return JSON.stringify({ message: `Error getting item from DynamoDB: ${err}` });
+        console.error('Error writing item to DynamoDB:', err);
+        return JSON.stringify({ message: `Error writing item to DynamoDB: ${err}` });
     }
 });

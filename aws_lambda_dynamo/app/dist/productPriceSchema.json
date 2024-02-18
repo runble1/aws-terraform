@@ -13,4 +13,3 @@
     },
     "required": ["ProductID", "CheckDate", "Price", "Title", "URL"]
 }
-  
