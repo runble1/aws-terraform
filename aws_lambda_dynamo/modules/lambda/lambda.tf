@@ -11,6 +11,7 @@ resource "null_resource" "build_lambda" {
       npm install
       npm run build
       cp -R node_modules dist/
+      cp src/productPriceSchema.json dist/
     EOT
   }
 
@@ -39,7 +40,7 @@ resource "aws_lambda_function" "aws_alert_function" {
   role          = aws_iam_role.lambda_role.arn
   runtime       = "nodejs20.x"
   timeout       = 10
-  kms_key_arn   = aws_kms_key.lambda_key.arn #環境変数の暗号化
+  #kms_key_arn   = aws_kms_key.lambda_key.arn #環境変数の暗号化
 
   filename         = data.archive_file.function_source.output_path
   source_code_hash = data.archive_file.function_source.output_base64sha256
