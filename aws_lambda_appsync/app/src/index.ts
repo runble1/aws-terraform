@@ -1,60 +1,62 @@
-import { DynamoDBClient, GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb';
-import Ajv from 'ajv';
-import { readFileSync } from 'fs';
-import path from 'path';
+import { SignatureV4 } from "@aws-sdk/signature-v4";
+import { Sha256 } from "@aws-crypto/sha256-js";
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
+import { HttpRequest } from "@aws-sdk/protocol-http";
 
-// DynamoDBクライアントの初期化
-const client = new DynamoDBClient({ region: 'ap-northeast-1' });
+const region = "ap-northeast-1";
+const graphqlEndpoint = process.env.APPSYNC_ENDPOINT || "";
 
-const ajv = new Ajv();
+const query = JSON.stringify({
+  query: `query GetProductPrice {
+    getProductPrice(ProductID: "EXAMPLE123", CheckDate: "2021-01-01") {
+      ProductID
+      CheckDate
+      Price
+      Title
+      URL
+    }
+  }`,
+});
 
-// JSONスキーマファイルの読み込み
-const schemaPath = path.join(__dirname, 'productPriceSchema.json');
-const productPriceSchema = JSON.parse(readFileSync(schemaPath, 'utf-8'));
+export async function handler() {
+  const fetch = (await import("node-fetch")).default;
 
-const validate = ajv.compile(productPriceSchema);
+  const endpointUrl = new URL(graphqlEndpoint);
+  const signer = new SignatureV4({
+    credentials: defaultProvider(),
+    region: region,
+    service: "appsync",
+    sha256: Sha256,
+  });
 
-exports.handler = async () => {
-  const currentDateISO = new Date().toISOString(); 
+  const request = new HttpRequest({
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Host": endpointUrl.hostname,
+    },
+    hostname: endpointUrl.hostname,
+    path: endpointUrl.pathname,
+    body: query,
+  });
 
-  const newItem = {
-    ProductID: 'EXAMPLE123',
-    CheckDate: currentDateISO, // 現在の日付
-    Price: 100,
-    PreviousPrice: 95,
-    PriceChange: 5,
-    Title: 'Example Product Title',
-    URL: 'https://www.amazon.com/dp/EXAMPLE123'
-  };
-
-  // JSON Schemaでのバリデーション
-  const valid = validate(newItem);
-  if (!valid) {
-    console.error(validate.errors);
-    throw new Error('Data validation failed');
-  }
-
-  // DynamoDBの期待する形式に変換
-  const dynamoDbItem = {
-    ProductID: { S: newItem.ProductID },
-    CheckDate: { S: newItem.CheckDate },
-    Price: { N: newItem.Price.toString() },
-    PreviousPrice: { N: newItem.PreviousPrice.toString() },
-    PriceChange: { N: newItem.PriceChange.toString() },
-    Title: { S: newItem.Title },
-    URL: { S: newItem.URL }
-  };
+  const signedRequest = await signer.sign(request);
 
   try {
-    // DynamoDBにアイテムを書き込む
-    await client.send(new PutItemCommand({
-      TableName: 'ProductPrices',
-      Item: dynamoDbItem
-    }));
-    console.log('Item successfully written to DynamoDB.');
-    return JSON.stringify({ message: 'Item successfully written to DynamoDB', item: newItem });
-  } catch (err) {
-    console.error('Error writing item to DynamoDB:', err);
-    return JSON.stringify({ message: `Error writing item to DynamoDB: ${err}` });
+    const response = await fetch(endpointUrl.toString(), {
+      method: signedRequest.method,
+      headers: {
+        ...signedRequest.headers,
+        "host": endpointUrl.hostname // 明示的にHostヘッダーを追加
+      },
+      body: signedRequest.body,
+    });
+
+    const data = await response.json();
+    console.log("Data retrieved from AppSync:", data);
+    return data;
+  } catch (error) {
+    console.error("Error querying AppSync:", error);
+    throw new Error(`Error querying AppSync: ${error}`);
   }
-};
+}

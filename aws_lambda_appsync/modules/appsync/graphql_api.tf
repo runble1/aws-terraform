@@ -1,5 +1,5 @@
-resource "aws_appsync_graphql_api" "example" {
-  name                = "${var.puroduct_name}"
+resource "aws_appsync_graphql_api" "this" {
+  name                = var.product_name
   authentication_type = "AWS_IAM"
 
   schema = <<EOF

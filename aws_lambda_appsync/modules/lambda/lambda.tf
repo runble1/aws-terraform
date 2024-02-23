@@ -12,6 +12,7 @@ resource "null_resource" "build_lambda" {
       npm run build
       cp -R node_modules dist/
       cp src/productPriceSchema.json dist/
+      cp package.json dist/
     EOT
   }
 
@@ -47,7 +48,7 @@ resource "aws_lambda_function" "aws_alert_function" {
 
   environment {
     variables = {
-      #KINESIS_FIREHOSE_NAME = var.kinesis_firehose_name
+      APPSYNC_ENDPOINT = var.appsync_endpoint
     }
   }
 
@@ -55,7 +56,7 @@ resource "aws_lambda_function" "aws_alert_function" {
     application_log_level = "INFO"
     log_format            = "JSON"
     #log_group             = var.lambda_another_log_group
-    system_log_level      = "WARN"
+    system_log_level = "WARN"
   }
 
   depends_on = [
