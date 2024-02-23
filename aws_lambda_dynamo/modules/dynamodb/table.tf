@@ -4,8 +4,8 @@ resource "aws_dynamodb_table" "product_prices" {
   read_capacity  = 5
   write_capacity = 5
 
-  hash_key       = "ProductID"
-  range_key      = "CheckDate"
+  hash_key  = "ProductID"
+  range_key = "CheckDate"
 
   attribute {
     name = "ProductID"

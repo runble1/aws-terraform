@@ -10,10 +10,10 @@ module "cloudwatch" {
 */
 
 module "dynamodb" {
-  source  = "../../modules/dynamodb"
+  source = "../../modules/dynamodb"
 }
 
 module "lambda" {
-  source                = "../../modules/lambda"
-  function_name         = "${var.env}-${local.service}"
+  source        = "../../modules/lambda"
+  function_name = "${var.env}-${local.service}"
 }
