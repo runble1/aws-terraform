@@ -8,7 +8,7 @@ const graphqlEndpoint = process.env.APPSYNC_ENDPOINT || "";
 
 const query = JSON.stringify({
   query: `query GetProductPrice {
-    getProductPrice(ProductID: "EXAMPLE123", CheckDate: "2021-01-01") {
+    getProductPrice(ProductID: "EXAMPLE123", CheckDate: "2023-02-18") {
       ProductID
       CheckDate
       Price

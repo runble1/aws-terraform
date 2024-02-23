@@ -1,5 +1,7 @@
 # Lambda + AppSync + DynamoDB
 
+JSON Schema で統一したいが、個別にスキーマを定義している。
+
 ## Deploy
 ```
 terraform apply

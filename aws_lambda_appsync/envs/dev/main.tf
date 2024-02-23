@@ -8,9 +8,10 @@ module "dynamodb" {
 }
 
 module "appsync" {
-  source       = "../../modules/appsync"
-  product_name = "${var.env}-${local.service}"
-  dynamodb_arn = module.dynamodb.dynamodb_arn
+  source              = "../../modules/appsync"
+  product_name        = "${var.env}_${local.service}"
+  dynamodb_arn        = module.dynamodb.dynamodb_arn
+  dynamodb_table_name = module.dynamodb.dynamodb_table_name
 }
 
 module "lambda" {
