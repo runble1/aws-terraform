@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ProductPrice",
+    "type": "object",
+    "properties": {
+      "ProductID": { "type": "string" },
+      "CheckDate": { "type": "string" },
+      "Price": { "type": "number" },
+      "PreviousPrice": { "type": "number" },
+      "PriceChange": { "type": "number" },
+      "Title": { "type": "string" },
+      "URL": { "type": "string" }
+    },
+    "required": ["ProductID", "CheckDate", "Price", "Title", "URL"]
+}
