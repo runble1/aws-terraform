@@ -1,15 +1,20 @@
-resource "aws_iam_role" "appsync_role" {
-  name = "${var.product_name}-appsync-role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Principal = {
-        Service = "appsync.amazonaws.com"
-      },
-      Effect = "Allow",
-    }]
-  })
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["appsync.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+# DynamoDB
+resource "aws_iam_role" "appsync_dynamodb_role" {
+  name               = "${var.product_name}-appsync-dynamodb-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
 resource "aws_iam_policy" "appsync_dynamodb_policy" {
@@ -33,13 +38,18 @@ resource "aws_iam_policy" "appsync_dynamodb_policy" {
   })
 }
 
-
 resource "aws_iam_role_policy_attachment" "appsync_dynamodb_policy_attachment" {
-  role       = aws_iam_role.appsync_role.name
+  role       = aws_iam_role.appsync_dynamodb_role.name
   policy_arn = aws_iam_policy.appsync_dynamodb_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "appsync_dynamodb_access" {
-  role       = aws_iam_role.appsync_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+# CloudWatch Logs
+resource "aws_iam_role" "appsync_cwl_role" {
+  name               = "${var.product_name}-appsync-cwl-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "appsync_cwl_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs"
+  role       = aws_iam_role.appsync_cwl_role.name
 }
