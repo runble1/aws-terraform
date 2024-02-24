@@ -52,6 +52,11 @@ resource "aws_lambda_function" "aws_alert_function" {
     }
   }
 
+  # X-Ray
+  tracing_config {
+    mode = "Active"
+  }
+
   logging_config {
     application_log_level = "INFO"
     log_format            = "JSON"
