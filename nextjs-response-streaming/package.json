@@ -18,7 +18,7 @@
     "autoprefixer": "10.4.17",
     "clsx": "1.2.1",
     "date-fns": "2.29.3",
-    "dinero.js": "2.0.0-alpha.8",
+    "dinero.js": "2.0.0-alpha.14",
     "eslint": "8.37.0",
     "eslint-config-next": "13.3.0",
     "ms": "3.0.0-canary.1",
