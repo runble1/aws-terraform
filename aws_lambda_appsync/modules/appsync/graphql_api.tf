@@ -26,4 +26,9 @@ schema {
   mutation: Mutation
 }
 EOF
+
+  log_config {
+    cloudwatch_logs_role_arn = aws_iam_role.appsync_cwl_role.arn
+    field_log_level          = "ERROR"
+  }
 }
