@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "0.5.10",
-    "@types/ms": "0.7.31",
+    "@types/ms": "0.7.34",
     "@types/node": "18.15.11",
     "@types/react": "18.0.33",
     "@types/react-dom": "18.0.11",
