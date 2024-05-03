@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^1.16.0",
+    "@aws-lambda-powertools/logger": "^2.0.0",
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18"

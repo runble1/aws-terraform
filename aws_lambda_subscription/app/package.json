@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^1.17.0"
+    "@aws-lambda-powertools/logger": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
