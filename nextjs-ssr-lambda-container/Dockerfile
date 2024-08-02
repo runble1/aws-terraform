@@ -6,7 +6,7 @@ RUN npm update && npm run build
 
 # ベースイメージの変更
 FROM public.ecr.aws/lambda/nodejs:20 as runner
-COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.1-aarch64 /lambda-adapter /opt/extensions/lambda-adapter
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4-aarch64 /lambda-adapter /opt/extensions/lambda-adapter
 
 ENV PORT=3000 NODE_ENV=production
 
