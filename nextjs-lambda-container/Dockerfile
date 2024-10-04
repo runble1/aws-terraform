@@ -1,5 +1,5 @@
 # Multi-stage buildでNext.jsをビルド
-FROM public.ecr.aws/docker/library/node:20.10.0-slim as builder
+FROM public.ecr.aws/docker/library/node:20.18.0-slim as builder
 WORKDIR /build
 COPY . ./
 RUN npm ci --verbose
@@ -7,7 +7,7 @@ RUN npm run build
 
 # ベースイメージの変更
 #FROM amazon/aws-lambda-nodejs:20.2024.02.07.18
-FROM public.ecr.aws/docker/library/node:20.10.0-slim as runner
+FROM public.ecr.aws/docker/library/node:20.18.0-slim as runner
 
 # Lambda Web Adapterのインストール
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.1-aarch64 /lambda-adapter /opt/extensions/lambda-adapter
