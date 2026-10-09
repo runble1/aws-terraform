@@ -1,10 +1,10 @@
-FROM public.ecr.aws/lambda/nodejs:20 as builder
+FROM public.ecr.aws/lambda/nodejs:24 as builder
 WORKDIR /app
 
 COPY . .
 RUN npm update && npm run build
 
-FROM public.ecr.aws/lambda/nodejs:20 as runner
+FROM public.ecr.aws/lambda/nodejs:24 as runner
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.1 /lambda-adapter /opt/extensions/lambda-adapter
 
 ENV PORT=3000 NODE_ENV=production
